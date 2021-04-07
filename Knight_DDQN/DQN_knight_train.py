@@ -20,9 +20,10 @@ from keyboard_use import *
 from DQN_pytorch_gpu import *
 from getkeys import key_check
 from keyboard_use import *
-from grep_sreen import grab_screen
+from grep_sreen import *
 from argconfig import *
 from function_use import *
+
 
 # DDPG训练模型
 agent = DDQN()
@@ -39,6 +40,7 @@ def Storage_thread(station, move_action, attack_action, reward):
     # step3 : 抓取动作
     third_screen_grey = grab_screen(main_window)
     third_screen_grey = cv2.cvtColor(third_screen_grey, cv2.COLOR_RGBA2RGB)
+    third_screen_grey = find_us(third_screen_grey)
     third_screen_grey = np.transpose(third_screen_grey, (2, 0, 1))
     next_station = third_screen_grey[np.newaxis, :]
 
@@ -58,6 +60,8 @@ def select_action(x):
     x_a = x_m.sample()
 
     return x_a.item()
+
+
 
 def sleep_train(sleep_time):
     if len(replay.storage) >= STORE_SIZE:
@@ -107,14 +111,6 @@ def init_start():
     print("[+] Enter start...")
 
 
-plt_step_list = []
-plt_step = 0
-plt_loss = []
-plt.ion()
-plt.figure(1, figsize=(10, 1))
-plt.plot(plt_step_list, plt_loss, color="orange")
-plt.pause(3)
-
 # DQN init
 paused = True
 paused = pause_game(paused)
@@ -160,6 +156,12 @@ for episode in range(1, EPISODES):
         # step1 : 首次抓取
         first_screen_grey = grab_screen(main_window)
         first_screen_grey = cv2.cvtColor(first_screen_grey, cv2.COLOR_RGBA2RGB)
+        first_screen_grey = find_us(first_screen_grey)
+        cv2.imshow("window_main", first_screen_grey)
+        cv2.moveWindow("window_main", 0, 540)
+
+        if cv2.waitKey(1) & 0xFF == ord('a'):
+            break
         first_screen_grey = np.transpose(first_screen_grey, (2, 0, 1))  # Tensor通道排列顺序是：[batch, channel, height, width]
         station = first_screen_grey[np.newaxis,:]
 
@@ -258,14 +260,7 @@ for episode in range(1, EPISODES):
         boss_blood_save_flag = boss_blood_save
         agent.save(str(boss_blood_save))
 
-    plt_step_list.append(plt_step)
-    plt_step += 1
-    plt_loss.append(agent.all_loss.detach().numpy() / avg_step)
-    plt.plot(plt_step_list, plt_loss, color="orange")
-    plt.pause(0.1)
-    if len(plt_step_list) >= 800:
-        plt_step_list = []
-        plt_loss = []
+
     print("[*] Epoch: ", episode, "通过次数", agent.pass_count, "Store: ", replay.ptr, replay.posptr, "Loss: ", agent.all_loss.detach().numpy() / avg_step)
 
     if replay.ptr <= 140 and replay.ptr != 0 and len(replay.storage) >= STORE_SIZE:
@@ -276,14 +271,7 @@ for episode in range(1, EPISODES):
             step += 1
             agent.all_loss = torch.tensor(0.)
             agent.train_network(replay, ALL_BATCH_SIZE, False, 0, num_step)
-            plt_step_list.append(plt_step)
-            plt_step += 1
-            plt_loss.append(agent.all_loss.detach().numpy())
-            plt.plot(plt_step_list, plt_loss, color="orange")
-            plt.pause(0.1)
-            if len(plt_step_list) >= 800:
-                plt_step_list = []
-                plt_loss = []
+
             print("[*] Replaying: ", step, "Loss: ", agent.all_loss.detach().numpy())
             step_loss += agent.all_loss
 
@@ -303,14 +291,7 @@ for episode in range(1, EPISODES):
             step += 1
             agent.all_loss = torch.tensor(0.)
             agent.train_network(replay, ALL_BATCH_SIZE, False, 1, num_step)
-            plt_step_list.append(plt_step)
-            plt_step += 1
-            plt_loss.append(agent.all_loss.detach().numpy())
-            plt.plot(plt_step_list, plt_loss, color="red")
-            plt.pause(0.1)
-            if len(plt_step_list) >= 800:
-                plt_step_list = []
-                plt_loss = []
+
             print("[*] PosReplaying: ", step, "Loss: ", agent.all_loss.detach().numpy())
             step_loss += agent.all_loss
 

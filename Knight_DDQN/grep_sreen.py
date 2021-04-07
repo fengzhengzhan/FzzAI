@@ -50,6 +50,37 @@ def grab_screen(region=None):
 
     return img
 
+def find_us(img):
+    frame = img
+    # frame = cv2.erode(frame, kernel=(5, 5), iterations=1)
+
+    lower_gray = np.array([0, 0, 46])
+    upper_gray = np.array([180, 43, 220])
+
+    lower_red = np.array([156, 43, 46])
+    upper_red = np.array([180, 255, 255])
+
+    lower_white = np.array([0, 0, 221])
+    upper_white = np.array([180, 30, 255])
+
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    mask_blue = cv2.inRange(hsv, lower_gray, upper_gray)
+    mask_blue = cv2.erode(mask_blue, kernel=(5, 5), iterations=1)
+    mask_red = cv2.inRange(hsv, lower_red, upper_red)
+    mask_red = cv2.erode(mask_red, kernel=(5, 5), iterations=1)
+    mask_white = cv2.inRange(hsv, lower_white, upper_white)
+    mask_white = cv2.erode(mask_white, kernel=(5, 5), iterations=1)
+
+    mask = cv2.add(mask_red, mask_blue)
+    mask = cv2.add(mask, mask_white)
+
+    res = cv2.bitwise_and(frame, frame, mask=mask)
+
+    return res
+
+
+
 def self_blood_number(self_gray):
     self_blood = 0
     range_set = False
@@ -129,7 +160,7 @@ def test_powerwindow():
 
 def test_mainwindow():
     while True:
-        first_screen_grey = grab_screen(blood_window)  # TODO 取差值
+        first_screen_grey = grab_screen(main_window)  # TODO 取差值
         first_screen_grey = cv2.cvtColor(first_screen_grey, cv2.COLOR_RGBA2GRAY)
         print(self_blood_number(first_screen_grey))
         cv2.imshow("window_main", first_screen_grey)
@@ -142,8 +173,27 @@ def test_mainwindow():
     cv2.waitKey()  # 视频结束后，按任意键退出
     cv2.destroyAllWindows()
 
+def test_mainfindwindow():
+    while True:
+        first_screen_grey = grab_screen(main_window)  # TODO 取差值
+        first_screen_grey = cv2.cvtColor(first_screen_grey, cv2.COLOR_RGBA2RGB)
+        res = find_us(first_screen_grey)
+        # print(res.shape)
+        # print(self_blood_number(first_screen_grey))
+        cv2.imshow("window_main", res)
+        cv2.moveWindow("window_main", 0, 540)
+
+        if cv2.waitKey(1) & 0xFF == ord('a'):
+            break
+
+    cv2.waitKey()  # 视频结束后，按任意键退出
+    cv2.destroyAllWindows()
+
+
 if __name__ == '__main__':
-    test_bloodwindow()
+    #test_mainwindow()
+    test_mainfindwindow()
+    # test_bloodwindow()
     # test_powerwindow()
     # while True:
     #     boss_screen_grey = grab_screen(boss_blood_window)
