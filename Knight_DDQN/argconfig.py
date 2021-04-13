@@ -11,12 +11,14 @@ TAU = 0.05  # 软更新
 MAX_FORWORD = 10  # 传播clip
 
 # 如果使用gpu
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 ACTIONATTACK_SIZE = 7
 ACTIONMOVE_SIZE = 7
 
 # train
+WIDTH = 236
+HEIGHT = 132
 main_window = (178, 99, 1121, 626)  # (904, 488) => (236, 122)
 boss_blood_window = (150, 660, 1140, 680)
 blood_window = (224, 101, 530, 150)
@@ -34,13 +36,13 @@ STORE_SIZE = 600  # 所需要存储的次数 1500
 REPLAY_POSSIZE = 600
 STORE_POSSIZE = 300
 BATCH_SIZE = 2  # 采样个数
-ALL_BATCH_SIZE = 64  # 储存满后疯狂经验回放
+ALL_BATCH_SIZE = 48  # 储存满后疯狂经验回放
 UPDATE_STEP = 120  # 更新target_net次数
-ONE_ATTACK = 30
+ONE_ATTACK = 2
 
-JUDGE_DONE = 10  # 死亡血量为0判断
+JUDGE_DONE = 6  # 死亡血量为0判断
 
-TRAINING_NUM = 160
+TRAINING_NUM = 300
 TOTAL_NUM = 200
 
 

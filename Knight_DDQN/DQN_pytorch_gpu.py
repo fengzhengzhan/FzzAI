@@ -19,17 +19,17 @@ class MoveResBlk(nn.Module):
     def __init__(self, ch_in, ch_out, stride=1):
         super(MoveResBlk, self).__init__()
         self.block = nn.Sequential(
-            nn.Conv2d(ch_in, ch_out, kernel_size=3, stride=stride, padding=1),
+            nn.Conv2d(ch_in, ch_out, kernel_size=3, stride=stride, padding=1, bias=False),
             nn.BatchNorm2d(ch_out),
             nn.ReLU(inplace=True),
-            nn.Conv2d(ch_out, ch_out, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(ch_out, ch_out, kernel_size=3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(ch_out),
         )
 
         self.shortcut = nn.Sequential()
         if ch_in != ch_out or stride != 1:
             self.shortcut = nn.Sequential(
-                nn.Conv2d(ch_in, ch_out, kernel_size=1, stride=stride),
+                nn.Conv2d(ch_in, ch_out, kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(ch_out)
             )
 
@@ -44,22 +44,21 @@ class MoveResBlk(nn.Module):
 class MoveDQN(nn.Module):
     def __init__(self, move_action):
         super(MoveDQN, self).__init__()
-
+        self.inchannel = 16
         self.conv1 = nn.Sequential(
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
-            nn.Conv2d(3, 8, kernel_size=3, stride=3, padding=0),
-            nn.BatchNorm2d(8),
+            nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(16),
             nn.ReLU(inplace=True)
         )
 
-        self.blk1 = MoveResBlk(8, 16, stride=2)
-        self.blk2 = MoveResBlk(16, 32, stride=2)
-        self.blk3 = MoveResBlk(32, 64, stride=2)
-        self.blk4 = MoveResBlk(64, 64, stride=2)
+        self.blk1 = self.make_layer(MoveResBlk, 16, 2, stride=1)
+        self.blk2 = self.make_layer(MoveResBlk, 32, 2, stride=2)
+        self.blk3 = self.make_layer(MoveResBlk, 64, 2, stride=2)
+        self.blk4 = self.make_layer(MoveResBlk, 128, 2, stride=2)
 
         # linear layer 线性层
         # 线性层的输入取决于conv2d的输出，计算输入图像大小
-        self.linear_input_size = 3840
+        self.linear_input_size = 3584
 
         self.advantage = nn.Sequential(  # 判定机制
             nn.Linear(self.linear_input_size, 256),
@@ -67,7 +66,6 @@ class MoveDQN(nn.Module):
             nn.Dropout(p=0.5),
             nn.Linear(256, 128),
             nn.Tanh(),
-            nn.Dropout(p=0.5),
             nn.Linear(128, 1),
         )
 
@@ -77,13 +75,20 @@ class MoveDQN(nn.Module):
             nn.Dropout(p=0.5),
             nn.Linear(256, 128),
             nn.Tanh(),
-            nn.Dropout(p=0.5),
             nn.Linear(128, move_action),
         )
 
         self.mls = nn.MSELoss()
         self.relu = nn.ReLU(inplace=True)
         self.opt = torch.optim.Adam(self.parameters(), lr=LR_MOVE)
+
+    def make_layer(self, block, channels, num_blocks, stride):
+        strides = [stride] + [1] * (num_blocks - 1)
+        layers = []
+        for stri in strides:
+            layers.append(block(self.inchannel, channels, stri))
+            self.inchannel = channels
+        return nn.Sequential(*layers)
 
     def forward(self, x):
         x = torch.as_tensor(x, dtype=torch.float32).to(DEVICE)
@@ -93,6 +98,7 @@ class MoveDQN(nn.Module):
         x = self.blk2(x)
         x = self.blk3(x)
         x = self.blk4(x)
+        x = F.avg_pool2d(x, 4)
 
         x = torch.flatten(x, 1)  # 打平
 
@@ -108,17 +114,17 @@ class AttackResBlk(nn.Module):
     def __init__(self, ch_in, ch_out, stride=1):
         super(AttackResBlk, self).__init__()
         self.block = nn.Sequential(
-            nn.Conv2d(ch_in, ch_out, kernel_size=3, stride=stride, padding=1),
+            nn.Conv2d(ch_in, ch_out, kernel_size=3, stride=stride, padding=1, bias=False),
             nn.BatchNorm2d(ch_out),
             nn.ReLU(inplace=True),
-            nn.Conv2d(ch_out, ch_out, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(ch_out, ch_out, kernel_size=3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(ch_out),
         )
 
         self.shortcut = nn.Sequential()
         if ch_in != ch_out or stride != 1:
             self.shortcut = nn.Sequential(
-                nn.Conv2d(ch_in, ch_out, kernel_size=1, stride=stride),
+                nn.Conv2d(ch_in, ch_out, kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(ch_out)
             )
 
@@ -132,22 +138,21 @@ class AttackResBlk(nn.Module):
 class AttackDQN(nn.Module):
     def __init__(self, attack_action):
         super(AttackDQN, self).__init__()
-
+        self.inchannel = 16
         self.conv1 = nn.Sequential(
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
-            nn.Conv2d(3, 8, kernel_size=3, stride=3, padding=0),
-            nn.BatchNorm2d(8),
+            nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(16),
             nn.ReLU(inplace=True)
         )
 
-        self.blk1 = AttackResBlk(8, 16, stride=2)
-        self.blk2 = AttackResBlk(16, 32, stride=2)
-        self.blk3 = AttackResBlk(32, 64, stride=2)
-        self.blk4 = AttackResBlk(64, 64, stride=2)
+        self.blk1 = self.make_layer(AttackResBlk, 16, 2, stride=1)
+        self.blk2 = self.make_layer(AttackResBlk, 32, 2, stride=2)
+        self.blk3 = self.make_layer(AttackResBlk, 64, 2, stride=2)
+        self.blk4 = self.make_layer(AttackResBlk, 128, 2, stride=2)
 
         # linear layer 线性层
         # 线性层的输入取决于conv2d的输出，计算输入图像大小
-        self.linear_input_size = 3840
+        self.linear_input_size = 3584
 
         self.advantage = nn.Sequential(  # 判定机制
             nn.Linear(self.linear_input_size, 256),
@@ -173,6 +178,14 @@ class AttackDQN(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.opt = torch.optim.Adam(self.parameters(), lr=LR_ATTACK)
 
+    def make_layer(self, block, channels, num_blocks, stride):
+        strides = [stride] + [1] * (num_blocks - 1)
+        layers = []
+        for stri in strides:
+            layers.append(block(self.inchannel, channels, stri))
+            self.inchannel = channels
+        return nn.Sequential(*layers)
+
     def forward(self, x):
         x = torch.as_tensor(x, dtype=torch.float32).to(DEVICE)
 
@@ -181,6 +194,7 @@ class AttackDQN(nn.Module):
         x = self.blk2(x)
         x = self.blk3(x)
         x = self.blk4(x)
+        x = F.avg_pool2d(x, 4)
 
         x = torch.flatten(x, 1)
 
@@ -352,7 +366,7 @@ class Replay_buffer():
             print("[*] REPLAY_BUFFER load finish! len:", len(self.storage))
         if os.path.exists(DQN_POSSTORE_PATH):
             self.posstorage = pickle.load(open(DQN_POSSTORE_PATH, 'rb'))
-            print("[*] REPLAY_BUFFER load finish! len:", len(self.posstorage))
+            print("[*] POSREPLAY_BUFFER load finish! len:", len(self.posstorage))
 
 
 '''
@@ -382,9 +396,9 @@ class DDQN():
 
     def choose_action(self, station, training_num):
         mutetu = (training_num / TOTAL_NUM)
-        if mutetu >= 1.0:
-            mutetu = 0.9
-        if random.random() >= mutetu:
+        #if mutetu >= 1.0:
+        #    mutetu = 0.9
+        if mutetu <= 1.0 and random.random() >= mutetu:
             return random.randint(0, self.action_move_size-1), random.randint(0, self.action_attack_size-1), "   随机"+str(mutetu), False
         else:
             move = self.MoveDQN_eval(station)
@@ -453,18 +467,18 @@ class DDQN():
         # 持续时间为reward  费血 -26 回血 +26 攻击 +0.5 增加能量 +10
         # reward在1附近 # TODO
         return_reward = 0
-        if next_boss_blood <= 20 and self.boss_blood <= 160:  # boss死亡
-            reward = 25
-            done = 1
-            self.pass_count += 1
-            return reward, done, self.boss_blood
-
         if next_self_blood < 1:  # 死亡
             if done_is:
                 reward = -22
             else:
                 reward = -1.75
             done = 1
+            return reward, done, self.boss_blood
+        
+        if next_boss_blood <= 20 and self.boss_blood <= 160:  # boss死亡
+            reward = 25
+            done = 1
+            self.pass_count += 1
             return reward, done, self.boss_blood
 
         done = 0

@@ -54,28 +54,30 @@ def find_us(img):
     frame = img
     # frame = cv2.erode(frame, kernel=(5, 5), iterations=1)
 
-    lower_gray = np.array([0, 0, 46])
-    upper_gray = np.array([180, 43, 220])
+    # lower_gray = np.array([0, 0, 46])
+    # upper_gray = np.array([180, 43, 220])
 
-    lower_red = np.array([156, 43, 46])
-    upper_red = np.array([180, 255, 255])
+    lower_red = np.array([0, 43, 46])
+    upper_red = np.array([0, 255, 255])
+
+    lower_red_boss = np.array([156, 43, 60])
+    upper_red_boss = np.array([180, 255, 255])
 
     lower_white = np.array([0, 0, 221])
     upper_white = np.array([180, 30, 255])
 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    mask_blue = cv2.inRange(hsv, lower_gray, upper_gray)
-    mask_blue = cv2.erode(mask_blue, kernel=(5, 5), iterations=1)
     mask_red = cv2.inRange(hsv, lower_red, upper_red)
-    mask_red = cv2.erode(mask_red, kernel=(5, 5), iterations=1)
+    mask_red_boss = cv2.inRange(hsv, lower_red_boss, upper_red_boss)
     mask_white = cv2.inRange(hsv, lower_white, upper_white)
     mask_white = cv2.erode(mask_white, kernel=(5, 5), iterations=1)
 
-    mask = cv2.add(mask_red, mask_blue)
+    mask = cv2.add(mask_red, mask_red_boss)
     mask = cv2.add(mask, mask_white)
 
     res = cv2.bitwise_and(frame, frame, mask=mask)
+    res = cv2.resize(res, (WIDTH, HEIGHT), interpolation=cv2.INTER_AREA)
 
     return res
 
@@ -180,8 +182,10 @@ def test_mainfindwindow():
         res = find_us(first_screen_grey)
         # print(res.shape)
         # print(self_blood_number(first_screen_grey))
+        # res = cv2.resize(res, (WIDTH, HEIGHT), interpolation=cv2.INTER_AREA)
+        # print(res.shape)
         cv2.imshow("window_main", res)
-        cv2.moveWindow("window_main", 0, 540)
+        cv2.moveWindow("window_main", 0, 600)
 
         if cv2.waitKey(1) & 0xFF == ord('a'):
             break

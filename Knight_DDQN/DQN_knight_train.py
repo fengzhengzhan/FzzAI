@@ -41,6 +41,7 @@ def Storage_thread(station, move_action, attack_action, reward):
     third_screen_grey = grab_screen(main_window)
     third_screen_grey = cv2.cvtColor(third_screen_grey, cv2.COLOR_RGBA2RGB)
     third_screen_grey = find_us(third_screen_grey)
+    # third_screen_grey = cv2.resize(third_screen_grey, (WIDTH, HEIGHT), interpolation=cv2.INTER_AREA)
     third_screen_grey = np.transpose(third_screen_grey, (2, 0, 1))
     next_station = third_screen_grey[np.newaxis, :]
 
@@ -66,6 +67,7 @@ def select_action(x):
 def sleep_train(sleep_time):
     if len(replay.storage) >= STORE_SIZE:
         agent.train_network(replay, ALL_BATCH_SIZE, False, 0, num_step)
+        agent.train_network(replay, ALL_BATCH_SIZE, False, 1, num_step)
     else:
         time.sleep(sleep_time)
 
@@ -80,23 +82,18 @@ def init_start():
             break
         sleep_train(1)
 
-
-    sleep_train(2)
-    # 起身
-    handld_top()
-    PressKey(SPACE)
-    time.sleep(0.05)
-    ReleaseKey(SPACE)
-    sleep_train(2)
-
-    handld_top()
-    PressKey(SPACE)
-    time.sleep(0.05)
-    ReleaseKey(SPACE)
-    sleep_train(2)
-
+    istart_time = time.time()
+    while time.time() - istart_time <= 6.0:
+        print("[-] time:", time.time() - istart_time)
+        sleep_train(2)
+        # 起身
+        handld_top()
+        PressKey(SPACE)
+        time.sleep(0.05)
+        ReleaseKey(SPACE)
 
     # 选择
+    sleep_train(2)
     handld_top()
     PressKey(I)
     time.sleep(0.05)
@@ -107,7 +104,6 @@ def init_start():
     time.sleep(0.05)
     ReleaseKey(SPACE)
     sleep_train(4)
-    time.sleep(1)
     print("[+] Enter start...")
 
 
@@ -122,7 +118,7 @@ boss_blood_save = 360
 boss_blood_save_flag = 360
 
 handld_top()
-first_start()
+init_start()
 
 for episode in range(1, EPISODES):
     step = 0
@@ -137,7 +133,6 @@ for episode in range(1, EPISODES):
     agent.all_blood = SELF_BLOOD
     agent.boss_blood = BOSS_ALL_BLOOD
     # judge.all_power = self_power_number(power_window_gray, power_window)
-    choose_time = time.time()
 
     agent.all_loss = torch.tensor(0.)
     training_num += 1
@@ -157,11 +152,13 @@ for episode in range(1, EPISODES):
         first_screen_grey = grab_screen(main_window)
         first_screen_grey = cv2.cvtColor(first_screen_grey, cv2.COLOR_RGBA2RGB)
         first_screen_grey = find_us(first_screen_grey)
-        cv2.imshow("window_main", first_screen_grey)
-        cv2.moveWindow("window_main", 0, 540)
+        # first_screen_grey = cv2.resize(first_screen_grey, (WIDTH, HEIGHT), interpolation=cv2.INTER_AREA)
 
-        if cv2.waitKey(1) & 0xFF == ord('a'):
-            break
+        #cv2.imshow("window_main", first_screen_grey)
+        #cv2.moveWindow("window_main", 0, 600)
+        #if cv2.waitKey(1) & 0xFF == ord('a'):
+        #    break
+
         first_screen_grey = np.transpose(first_screen_grey, (2, 0, 1))  # Tensor通道排列顺序是：[batch, channel, height, width]
         station = first_screen_grey[np.newaxis,:]
 
@@ -184,16 +181,23 @@ for episode in range(1, EPISODES):
         # step2 : 执行动作
         move_batch, attack_batch, action_choose_name, choose_flag = agent.choose_action(station, training_num)
 
-        if choose_flag:
+        # if choose_flag:
+        #     move_num = select_action(move_batch)
+        #     attack_num = select_action(attack_batch)
+        # else:
+        #     move_num = move_batch
+        #     attack_num = attack_batch
+        #
+        # handld_top()
+        # take_move_action(move_num, last_move_num)
+        # take_attack_action(attack_num)
+
+        for i in range(ONE_ATTACK):
             move_num = select_action(move_batch)
             attack_num = select_action(attack_batch)
-        else:
-            move_num = move_batch
-            attack_num = attack_batch
-
-        handld_top()
-        take_move_action(move_num, last_move_num)
-        take_attack_action(attack_num)
+            handld_top()
+            take_move_action(move_num, last_move_num)
+            take_attack_action(attack_num)
 
         # step3 : 抓取动作
         next_blood_window_gray = cv2.cvtColor(grab_screen(blood_window), cv2.COLOR_RGBA2GRAY)
@@ -225,7 +229,8 @@ for episode in range(1, EPISODES):
         #     action_choose_name, boss_blood_display,
         #     reward, total_reward, time.time() - init_time))
         # init_time = time.time()
-        # agent.train_network(replay, ALL_BATCH_SIZE, True, 0, num_step)
+        # if avg_step >= 5:
+        #     agent.train_network(replay, ALL_BATCH_SIZE, True, 0, num_step)
 
         print('once {} {} {} boss{} reward {} {}.'.format(ch_move_action[move_num], ch_attack_action[attack_num], action_choose_name, boss_blood_display, reward, total_reward))
         total_reward += reward
@@ -263,11 +268,11 @@ for episode in range(1, EPISODES):
 
     print("[*] Epoch: ", episode, "通过次数", agent.pass_count, "Store: ", replay.ptr, replay.posptr, "Loss: ", agent.all_loss.detach().numpy() / avg_step)
 
-    if replay.ptr <= 140 and replay.ptr != 0 and len(replay.storage) >= STORE_SIZE:
+    if replay.ptr <= 60 and replay.ptr != 0 and len(replay.storage) >= STORE_SIZE and episode >= 20:
         step_loss = torch.tensor(0.)
         replay.save()
         print("[*] Replay len:", len(replay.storage))
-        for i in range(200):
+        for i in range(300):
             step += 1
             agent.all_loss = torch.tensor(0.)
             agent.train_network(replay, ALL_BATCH_SIZE, False, 0, num_step)
@@ -275,19 +280,19 @@ for episode in range(1, EPISODES):
             print("[*] Replaying: ", step, "Loss: ", agent.all_loss.detach().numpy())
             step_loss += agent.all_loss
 
-            if step % 20 == 0:
+            if step % 30 == 0:
                 agent.train_network(replay, BATCH_SIZE, True, 0, num_step)
                 agent.save()
-                if (step_loss / 20.0) <= 80:
+                if (step_loss / 30.0) <= 80:
                     break
                 else:
                     step_loss = torch.tensor(0.)
 
-    if replay.posptr <= 24 and replay.posptr != 0 and len(replay.posstorage) >= STORE_POSSIZE:
+    if replay.posptr <= 24 and replay.posptr != 0 and len(replay.posstorage) >= STORE_POSSIZE and episode >= 20:
         step_loss = torch.tensor(0.)
         replay.save()
         print("[*] PosReplay len:", len(replay.posstorage))
-        for i in range(200):
+        for i in range(300):
             step += 1
             agent.all_loss = torch.tensor(0.)
             agent.train_network(replay, ALL_BATCH_SIZE, False, 1, num_step)
@@ -295,10 +300,10 @@ for episode in range(1, EPISODES):
             print("[*] PosReplaying: ", step, "Loss: ", agent.all_loss.detach().numpy())
             step_loss += agent.all_loss
 
-            if step % 40 == 0:
+            if step % 50 == 0:
                 agent.train_network(replay, BATCH_SIZE, True, 1, num_step)
                 agent.save()
-                if (step_loss / 40.0) <= 30:
+                if (step_loss / 50.0) <= 40:
                     break
                 else:
                     step_loss = torch.tensor(0.)

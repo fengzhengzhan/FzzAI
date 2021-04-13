@@ -181,7 +181,7 @@ def space_short_up():
 
 def space_stay():
     PressKey(SPACE)
-    time.sleep(0.02)
+    time.sleep(0.25)
 
 
 def to_left():
