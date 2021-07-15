@@ -53,7 +53,7 @@ class AResNet(nn.Module):
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
-        self.avgpool = nn.AvgPool3d((1, 8, 12), stride=1)
+        self.avgpool = nn.AvgPool3d(KERNEL_3D, stride=1)
         self.fc1 = nn.Linear(512, 64)
         self.fc2 = nn.Linear(64, action_dim)
         self.dropoutone = nn.Dropout(DROPOUT_ONE)
@@ -106,7 +106,7 @@ class AResNet(nn.Module):
         x = self.fc2(x)
         x = self.dropouttwo(x)
         x = self.tanh(x)
-        x = x*0.4
+        x = x*SCALE_VALUE
 
         return x
 
@@ -156,7 +156,7 @@ class CResNet(nn.Module):
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
-        self.avgpool = nn.AvgPool3d((1, 8, 12), stride=1)
+        self.avgpool = nn.AvgPool3d(KERNEL_3D, stride=1)
         self.fc1 = nn.Linear(512, 64)
         self.fc2 = nn.Linear(64, 1)
         self.afc1 = nn.Linear(action_dim, 64)
@@ -239,12 +239,12 @@ class AbrainModelDDPG():
         #     duration_s = duration_s - self.mu
         # elif duration_s < 0:
         #     duration_s = duration_s + self.mu
-        duration_s = round(float(np.clip(np.random.normal(duration_s, self.sigma), -0.4, 0.4)), 2)
+        duration_s = round(float(np.clip(np.random.normal(duration_s, self.sigma), -SCALE_VALUE, SCALE_VALUE)), 2)
         # if self.mu > 0.0 or self.sigma > 0.0:
         if self.sigma > 0.0:
             # self.mu = MU_RATE - MU_RATE * num_step / RANDOM_EPISODE
             self.sigma = SIGMA - SIGMA * num_step / RANDOM_EPISODE
-
+        print("输出动作:", duration_s)
         return duration_s
 
 

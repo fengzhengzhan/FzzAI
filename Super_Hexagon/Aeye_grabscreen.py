@@ -57,6 +57,12 @@ class GrabScreenProcess(Process):
     def run(self):
         while True:
             img = self.grab_screen(region=SUPERHEXAGON_WINDOW)
+            # print(img.shape)
+            # cv2.imshow("window_main", img)
+            # cv2.moveWindow("window_main", 800, 340)
+            # if cv2.waitKey(1) & 0xFF == ord('a'):
+            #     print(cv2.waitKey(1))
+            #     break
             img = self.image_conversion(img)
             torchimg = img[np.newaxis, :]  #(C,H,W) 3D卷积核(N,C,D,H,W)
             torchimg = torch.as_tensor(torchimg, dtype=torch.float32).to(CPUDEVICE)
@@ -83,8 +89,6 @@ class AeyeGrabscreen(object):
     def getstate(self):
         x = int(self.screen_index.value)
         state = torch.stack([
-            self.screen_list[(x - 5) % MANAGER_LIST_LENGTH],
-            self.screen_list[(x - 4) % MANAGER_LIST_LENGTH],
             self.screen_list[(x - 3) % MANAGER_LIST_LENGTH],
             self.screen_list[(x - 2) % MANAGER_LIST_LENGTH],
             self.screen_list[(x - 1) % MANAGER_LIST_LENGTH],

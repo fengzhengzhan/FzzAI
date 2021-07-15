@@ -1,10 +1,11 @@
 import torch
-
+import os
 
 # Abrain_model
 ACTION_DIM = 1
 MODEL_FILENAME = "SuperHexagonModel"
 
+KERNEL_3D = (1, 8, 12)
 STORAGE_TARGET = 4  # 阶段性目标，为使reward为负
 
 LR_A = 0.000001
@@ -14,6 +15,7 @@ TAU = 0.01  # 软更新
 
 DROPOUT_ONE = 0.2
 DROPOUT_TWO = 0.5
+SCALE_VALUE = 0.4
 
 MU = 0.6
 MU_RATE = 0.995
@@ -69,3 +71,31 @@ DEBUG_MODE = False
 if DEBUG_MODE:
     TRAINSTORAGELEN = 10
     TRAINEPISODELEN = 2
+
+VALIDATION_EXPERIMENT = True
+if VALIDATION_EXPERIMENT:
+    SCALE_VALUE = 2
+    LR_A = 0.000001
+    LR_C = 0.000002
+    GAMMA = 0.9
+    TAU = 0.01
+    BATCH_SIZE = 16
+    RENDER = True
+    ENV_NAME = "Pendulum-v0"
+    TRAININGDURATION = 10  # 持续时间 s
+
+    SUPERHEXAGON_WINDOW = (50, 100, 449, 499)
+    RESIZE_WINDOW = (200, 200)
+    KERNEL_3D = (1, 7, 7)
+
+    MODEL_FILENAME = ENV_NAME + "_Model"
+    if not os.path.exists(MODEL_FILENAME):
+        os.mkdir(MODEL_FILENAME)
+    MODEL_PATH = MODEL_FILENAME + "\\"
+    SUPERHEXAGON_STORE_PATH = MODEL_FILENAME + "\\validation_store_path"
+    SUPERHEXAGON_POSSTORE_PATH = MODEL_FILENAME + "\\validation_posstore_path"
+    SUPERHEXAGON_REWARDFLAG_PATH = MODEL_FILENAME + "\\validation_rewardflag_path"
+
+    SIGMA = 3
+    MAX_EP_STEPS = 200
+    REPLAY_SIZE = 500

@@ -57,7 +57,7 @@ class AmemoryReplaybuffer():
 
             state_batch = torch.cat((state_batch, self.storage[dataInx][0]), 0)
             action_batch = np.vstack([action_batch, self.storage[dataInx][1]])
-            if self.storage[dataInx][2] < 0:
+            if self.storage[dataInx][2] <= 0:
                 reward_batch = np.vstack([reward_batch, self.storage[dataInx][2]])
             else:
                 reward_batch = np.vstack([reward_batch, self.rewardflag_dict[self.storage[dataInx][2]]])
