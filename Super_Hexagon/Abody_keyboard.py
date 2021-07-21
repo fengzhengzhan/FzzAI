@@ -3,6 +3,8 @@ import time
 from Twindow_handletop import handle_top
 import cv2
 from config import *
+from torch.distributions import Categorical
+import numpy as np
 
 
 # C struct defs
@@ -74,8 +76,24 @@ P = 0x19
 ENTER = 0x1C
 ESC = 0x01
 
+# 抽样选择动作
+def sample_select_action(x):
+    # Vector
+    # 处理一维数组
+    x_max = np.max(x)
+    x -= x_max
+    numerator = np.exp(x)
+    denominator = 1.0 / np.sum(numerator)
+    x = numerator.dot(denominator)
 
-# 箭头移动  不到1s一圈
+    x = torch.as_tensor(x)  # 生成分布
+    x_m = Categorical(x)  # 从分布中采样
+    x_a = x_m.sample()
+
+    return x_a.item()
+
+
+# 箭头移动  0.4s半圈
 def move(value, printflag):
     if value >= 0.0:
         PressKey(A)

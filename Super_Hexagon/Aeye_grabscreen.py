@@ -49,8 +49,8 @@ class GrabScreenProcess(Process):
     # 将图像使用opencv处理，缩小，去色
     def image_conversion(self, img):
         res = cv2.resize(img, RESIZE_WINDOW, interpolation=cv2.INTER_AREA)
-        grayimg = cv2.cvtColor(res, cv2.COLOR_RGBA2GRAY)
-        grayimg = cv2.convertScaleAbs(grayimg, alpha=2.5, beta=0)  # 增加对比度
+        grayimg = cv2.cvtColor(res, cv2.COLOR_RGBA2RGB)
+        # grayimg = cv2.convertScaleAbs(grayimg, alpha=2.5, beta=0)  # 增加对比度
         return grayimg
 
     # run()是Process类专门留出来用于重写的接口函数
@@ -64,15 +64,17 @@ class GrabScreenProcess(Process):
             #     print(cv2.waitKey(1))
             #     break
             img = self.image_conversion(img)
+            img = np.transpose(img, (2, 0, 1))
             torchimg = img[np.newaxis, :]  #(C,H,W) 3D卷积核(N,C,D,H,W)
             torchimg = torch.as_tensor(torchimg, dtype=torch.float32).to(CPUDEVICE)
+            # print(torchimg.shape)
             # print(time.time(), self.screen_index.value)  # DEBUG
 
             # 滚动数组
             # print("debug:", (self.screen_index.value+1) % MANAGER_LIST_LENGTH)
             self.screen_list[(self.screen_index.value+1) % MANAGER_LIST_LENGTH] = torchimg
             self.screen_index.value += 1
-            time.sleep(SLEEP_SCREEN)
+            # time.sleep(SLEEP_SCREEN)
 
 class AeyeGrabscreen(object):
     def __init__(self):
@@ -84,16 +86,17 @@ class AeyeGrabscreen(object):
 
         grabscreen_process = GrabScreenProcess(screen_index=self.screen_index, screen_list=self.screen_list)
         grabscreen_process.start()  # 开启进程
-        # time.sleep(SLEEP_INIT_GRAB)
+        time.sleep(SLEEP_INIT_GRAB)
 
     def getstate(self):
         x = int(self.screen_index.value)
-        state = torch.stack([
-            self.screen_list[(x - 3) % MANAGER_LIST_LENGTH],
-            self.screen_list[(x - 2) % MANAGER_LIST_LENGTH],
-            self.screen_list[(x - 1) % MANAGER_LIST_LENGTH],
-            self.screen_list[x % MANAGER_LIST_LENGTH]
-        ], dim=1)
+        # state = torch.stack([
+        #     self.screen_list[(x - 3) % MANAGER_LIST_LENGTH],
+        #     self.screen_list[(x - 2) % MANAGER_LIST_LENGTH],
+        #     self.screen_list[(x - 1) % MANAGER_LIST_LENGTH],
+        #     self.screen_list[x % MANAGER_LIST_LENGTH]
+        # ], dim=1)
+        state = self.screen_list[x % MANAGER_LIST_LENGTH]
         state = torch.as_tensor(state, dtype=torch.float32).to(DEVICE)
         # print(state.shape, x)
         return state
@@ -104,7 +107,10 @@ if __name__ == '__main__':
     aeyegrabscreen = AeyeGrabscreen()
     while True:
         state = aeyegrabscreen.getstate()
-        print(state.shape)
+        # state = state - state
+        # time.sleep(0.2)
+        # next_state = aeyegrabscreen.getstate()
+        print(state, state.shape)
 
     # while True:
     #     print(screen_index)

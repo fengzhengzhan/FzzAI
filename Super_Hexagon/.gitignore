@@ -2,3 +2,5 @@
 /.idea
 /__pycache__
 /Pendulum-v0_Model
+/CartPole-v0_Model
+/CartPole-v1_Model

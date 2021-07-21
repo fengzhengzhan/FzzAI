@@ -16,18 +16,21 @@ if __name__ == '__main__':  # 多进程freeze_support()
     # print_logo()
     handle_top()
     screen = AeyeGrabscreen()  # 视觉模块：屏幕截图  先将视觉进程打开，同步截取屏幕
-    agent = AbrainModelDDPG()  # DDPG模型
+    agent = AbrainModel()  # 模型
     agent.load()
     replay = AmemoryReplaybuffer()  # 经验池回放
     replay.load()
     score = EscoreReadram()  # 获取得分
     pool = ThreadPoolExecutor(max_workers=MAX_WORKERS)  # 线程池
 
+    pro_step_num = 1
 
     for episode in range(1, EPISODES):
         game_score = 0
         pro_game_score = 0
         reward = 0
+        step_num = 1
+        pro_action_num = -1
         global_best_reward = GLOBAL_BEST_REWARD
         ti = time.strftime("%Y%m%d%H%M%S", time.localtime())  # 用于保存每轮的唯一标识，以便区分reward
         reward_flag = int(ti) + int(episode*1e14)
@@ -35,29 +38,44 @@ if __name__ == '__main__':  # 多进程freeze_support()
         print(reward_flag)
 
         init_startgame()
-
+        last_screen = screen.getstate()
+        current_screen = screen.getstate()
+        next_state = current_screen - last_screen
         while True:
             # Step1: 首次抓取屏幕
-            state = screen.getstate().unsqueeze(0)  # (N,C,D,H,W)
-            # print(state.shape, state.device)  # torch.Size([1, 1, 4, 238, 384]) cuda:0
+            # state = screen.getstate()  # (N,C,H,W)
+            # 进入下一状态
+            state = next_state
+            # print(state.shape, state.device)  # torch.Size([1, 1, 238, 384]) cuda:0
 
             # Step2: 执行动作
-            action = agent.choose_action(state, episode)
-            move(action, True)
+            action = agent.choose_action(state, pro_step_num, step_num)
+            # print(action)
+            move_action = ACTION_STEPS[action]
+            move(move_action, True)
             game_score = score.get_score()
-            reward = agent.action_judge(game_score)
+            reward = agent.action_judge(game_score, pro_action_num, action)
 
-            # Step3: 动作完成，抓取屏幕，完成一次交互 将最后一步默认不添加至进程池
+            pro_action_num = action
+            step_num += 1
+
+
+            # Step3: 动作完成，抓取屏幕，完成一次交d互 将最后一步默认不添加至进程池
             # 线程池->经验池存储
+            # next_state = screen.getstate()
+            last_screen = current_screen
+            current_screen = screen.getstate()
+            next_state = current_screen - last_screen
             if game_score - pro_game_score > END_GAME_TIME:
-                pool.submit(replay.Storage_thread, state, action, reward_flag, screen, False, None)
+                pool.submit(replay.Storage_thread, state, action, reward_flag, next_state, True, reward)
                 pro_game_score = game_score
             else:
                 # 游戏结束
                 # print(game_score, pro_game_score)
-                lastreward = -round(float(int(game_score) / 60), 2)
-                pool.submit(replay.Storage_thread, state, action, reward_flag, screen, True, lastreward)
+                lastreward = -round(float(math.sqrt(int(game_score) / 60)), 2)
+                pool.submit(replay.Storage_thread, state, action, reward_flag, next_state, True, lastreward)
                 replay.push_reward(reward_flag=reward_flag, reward=reward)
+                pro_step_num = step_num
                 break
 
 
@@ -69,11 +87,14 @@ if __name__ == '__main__':  # 多进程freeze_support()
         if storagelen >= TRAINSTORAGELEN and episode >= TRAINEPISODELEN and not TEST_MODE:
             print("[-] 正在训练，持续时间", TRAININGDURATION ,"s...")
             starttime = time.time()
-            while time.time() - starttime <= TRAININGDURATION:
-                agent.train_network(replay=replay, lossprintflag=True, num_step=episode)
+            startnum = 0
+            while time.time() - starttime <= TRAININGDURATION and startnum < TRAINPERNUM:
+                startnum += 1
+                agent.train_network(replay=replay, lossprintflag=True, num_step=episode, per_step=startnum)
         else:
             time.sleep(SLEEP_GAME)
 
+        time.sleep(SLEEP_INTERVAL)
         # 保存数据
         if episode == SAVE_FIRST_EPISODE or episode % SAVE_EPISODE == 0:
             agent.save()

@@ -46,10 +46,10 @@ class AmemoryReplaybuffer():
 
         state_batch = self.storage[dataInx][0]
         action_batch = self.storage[dataInx][1]
-        if self.storage[dataInx][2] < 0:
-            reward_batch = self.storage[dataInx][2]
-        else:
+        if self.storage[dataInx][2] > 100000:
             reward_batch = self.rewardflag_dict[self.storage[dataInx][2]]
+        else:
+            reward_batch = self.storage[dataInx][2]
         next_state_batch = self.storage[dataInx][3]
 
         for i in range(1, batch_size):
@@ -57,13 +57,13 @@ class AmemoryReplaybuffer():
 
             state_batch = torch.cat((state_batch, self.storage[dataInx][0]), 0)
             action_batch = np.vstack([action_batch, self.storage[dataInx][1]])
-            if self.storage[dataInx][2] <= 0:
-                reward_batch = np.vstack([reward_batch, self.storage[dataInx][2]])
-            else:
+            if self.storage[dataInx][2] > 100000:
                 reward_batch = np.vstack([reward_batch, self.rewardflag_dict[self.storage[dataInx][2]]])
+            else:
+                reward_batch = np.vstack([reward_batch, self.storage[dataInx][2]])
             next_state_batch = torch.cat((next_state_batch, self.storage[dataInx][3]), 0)
 
-        action_batch = torch.as_tensor(action_batch, dtype=torch.float32).to(DEVICE)
+        action_batch = torch.as_tensor(action_batch, dtype=torch.long).to(DEVICE)
         reward_batch = torch.as_tensor(reward_batch, dtype=torch.float32).to(DEVICE)
 
         return state_batch, action_batch, reward_batch, next_state_batch
@@ -98,9 +98,8 @@ class AmemoryReplaybuffer():
         return self.rewardflag_dict[reward_flag]
 
 
-    def Storage_thread(self, state, action, reward_flag, screen, laststepflag, lastreward):
+    def Storage_thread(self, state, action, reward_flag, next_state, laststepflag, lastreward):
         # step3 : 抓取动作
-        next_state = screen.getstate().unsqueeze(0)
         if laststepflag:
             self.push(state, action, lastreward, next_state)
         else:

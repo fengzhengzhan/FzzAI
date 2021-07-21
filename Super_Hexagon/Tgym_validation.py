@@ -14,46 +14,53 @@ from config import *
 
 # 手动调整窗口位置
 if __name__ == '__main__':
-    env = gym.make(ENV_NAME)
+    env = gym.make(ENV_NAME).unwrapped
     env = env.unwrapped
     env.seed(1)
 
     torch.cuda.empty_cache()
     screen = AeyeGrabscreen()  # 视觉模块：屏幕截图  先将视觉进程打开，同步截取屏幕
-    agent = AbrainModelDDPG()  # DDPG模型
+    agent = AbrainModel()  # DDPG模型
     agent.load()
     replay = AmemoryReplaybuffer()  # 经验池回放
     replay.load()
-    score = EscoreReadram()  # 获取得分
+    # score = EscoreReadram()  # 获取得分
     pool = ThreadPoolExecutor(max_workers=MAX_WORKERS)  # 线程池
     # time.sleep(2)
+    pro_step_num = 1
 
     for episode in range(1, EPISODES):
         s = env.reset()
         ep_reward = 0
+        step_num = 1
         if episode == 1:
             for i in range(600):
                 # print(i)
                 if RENDER:
                     env.render()
 
-        for j in range(MAX_EP_STEPS):
+        while True:
             if RENDER:
                 env.render()
             # Step1: 首次抓取屏幕
-            state = screen.getstate().unsqueeze(0)  # (N,C,D,H,W)
+            state = screen.getstate()  # (N,C,D,H,W)
             # print(state.shape, state.device)  # torch.Size([1, 1, 4, 238, 384]) cuda:0
 
             # Step2: 执行动作
-            action = agent.choose_action(state, episode)
-            action = np.array([action])
+            action = agent.choose_action(state, pro_step_num, step_num)
             observation, reward, done, info = env.step(action)
             # print(reward, done, info)
             ep_reward += reward
+            step_num += 1
 
             # Step3: 动作完成，抓取屏幕，完成一次交互 将最后一步默认不添加至进程池
             # 线程池->经验池存储
-            pool.submit(replay.Storage_thread, state, action, None, screen, True, reward)
+            next_state = screen.getstate()
+            pool.submit(replay.Storage_thread, state, action, None, next_state, True, reward)
+
+            if done:
+                pro_step_num = step_num
+                break
 
 
         # 训练模型，保存数据
@@ -64,7 +71,9 @@ if __name__ == '__main__':
         if storagelen >= TRAINSTORAGELEN and episode >= TRAINEPISODELEN and not TEST_MODE:
             print("[-] 正在训练，持续时间", TRAININGDURATION ,"s...")
             starttime = time.time()
-            while time.time() - starttime <= TRAININGDURATION:
+            startnum = 0
+            while time.time() - starttime <= TRAININGDURATION and startnum < TRAINPERNUM:
+                startnum += 1
                 agent.train_network(replay=replay, lossprintflag=True, num_step=episode)
         else:
             time.sleep(SLEEP_GAME)
