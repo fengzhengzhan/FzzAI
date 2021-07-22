@@ -26,6 +26,7 @@ if __name__ == '__main__':  # 多进程freeze_support()
     pro_step_num = 1
 
     for episode in range(1, EPISODES):
+        handle_top()
         game_score = 0
         pro_game_score = 0
         reward = 0
@@ -38,14 +39,10 @@ if __name__ == '__main__':  # 多进程freeze_support()
         print(reward_flag)
 
         init_startgame()
-        last_screen = screen.getstate()
-        current_screen = screen.getstate()
-        next_state = current_screen - last_screen
         while True:
             # Step1: 首次抓取屏幕
-            # state = screen.getstate()  # (N,C,H,W)
+            state = screen.getstate()  # (N,C,H,W)
             # 进入下一状态
-            state = next_state
             # print(state.shape, state.device)  # torch.Size([1, 1, 238, 384]) cuda:0
 
             # Step2: 执行动作
@@ -62,17 +59,14 @@ if __name__ == '__main__':  # 多进程freeze_support()
 
             # Step3: 动作完成，抓取屏幕，完成一次交d互 将最后一步默认不添加至进程池
             # 线程池->经验池存储
-            # next_state = screen.getstate()
-            last_screen = current_screen
-            current_screen = screen.getstate()
-            next_state = current_screen - last_screen
+            next_state = screen.getstate()
             if game_score - pro_game_score > END_GAME_TIME:
                 pool.submit(replay.Storage_thread, state, action, reward_flag, next_state, True, reward)
                 pro_game_score = game_score
             else:
                 # 游戏结束
                 # print(game_score, pro_game_score)
-                lastreward = -round(float(math.sqrt(int(game_score) / 60)), 2)
+                lastreward = -round(float((int(game_score) / 60) * 0.1), 2)
                 pool.submit(replay.Storage_thread, state, action, reward_flag, next_state, True, lastreward)
                 replay.push_reward(reward_flag=reward_flag, reward=reward)
                 pro_step_num = step_num

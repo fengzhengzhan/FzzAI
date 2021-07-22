@@ -121,6 +121,7 @@ def esc_quit():
 
 
 def init_startgame():
+    time.sleep(0.05)
     PressKey(SPACE)
     time.sleep(0.05)
     ReleaseKey(SPACE)

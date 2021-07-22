@@ -49,23 +49,25 @@ class GrabScreenProcess(Process):
     # 将图像使用opencv处理，缩小，去色
     def image_conversion(self, img):
         res = cv2.resize(img, RESIZE_WINDOW, interpolation=cv2.INTER_AREA)
-        grayimg = cv2.cvtColor(res, cv2.COLOR_RGBA2RGB)
+        grayimg = cv2.cvtColor(res, cv2.COLOR_RGBA2GRAY)
         # grayimg = cv2.convertScaleAbs(grayimg, alpha=2.5, beta=0)  # 增加对比度
+        _, grayimg = cv2.threshold(grayimg, 128, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
         return grayimg
 
     # run()是Process类专门留出来用于重写的接口函数
     def run(self):
         while True:
             img = self.grab_screen(region=SUPERHEXAGON_WINDOW)
+            img = self.image_conversion(img)
             # print(img.shape)
             # cv2.imshow("window_main", img)
-            # cv2.moveWindow("window_main", 800, 340)
+            # cv2.moveWindow("window_main", 100, 600)
             # if cv2.waitKey(1) & 0xFF == ord('a'):
             #     print(cv2.waitKey(1))
             #     break
-            img = self.image_conversion(img)
-            img = np.transpose(img, (2, 0, 1))
             torchimg = img[np.newaxis, :]  #(C,H,W) 3D卷积核(N,C,D,H,W)
+            torchimg = torchimg[np.newaxis, :]
             torchimg = torch.as_tensor(torchimg, dtype=torch.float32).to(CPUDEVICE)
             # print(torchimg.shape)
             # print(time.time(), self.screen_index.value)  # DEBUG
@@ -104,13 +106,38 @@ class AeyeGrabscreen(object):
 
 
 if __name__ == '__main__':
+    # 单图片获取测试
     aeyegrabscreen = AeyeGrabscreen()
     while True:
         state = aeyegrabscreen.getstate()
-        # state = state - state
         # time.sleep(0.2)
         # next_state = aeyegrabscreen.getstate()
-        print(state, state.shape)
+        # print(state)
+        print(state.shape)
+
+
+    # 差值图片获取测试
+    # screen = AeyeGrabscreen()
+    # last_screen = screen.getstate()
+    # current_screen = screen.getstate()
+    # next_state = current_screen - last_screen
+    # while True:
+    #     state = next_state.to(CPUDEVICE)
+    #     state = np.array(state[0][0])
+    #     # time.sleep(0.2)
+    #     # next_state = aeyegrabscreen.getstate()
+    #     # print(state)
+    #     # print(state.shape)
+    #
+    #     cv2.imshow("window_main", state)
+    #     cv2.moveWindow("window_main", 800, 340)
+    #     if cv2.waitKey(1) & 0xFF == ord('a'):
+    #         print(cv2.waitKey(1))
+    #
+    #     last_screen = current_screen
+    #     current_screen = screen.getstate()
+    #     next_state = current_screen - last_screen
+
 
     # while True:
     #     print(screen_index)

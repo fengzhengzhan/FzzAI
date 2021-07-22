@@ -287,7 +287,7 @@ class EfficientNet(nn.Module):
         layers = OrderedDict()
 
         # first conv
-        layers.update({"stem_conv": ConvBNActivation(in_planes=3,
+        layers.update({"stem_conv": ConvBNActivation(in_planes=1,
                                                      out_planes=adjust_channels(32),
                                                      kernel_size=3,
                                                      stride=2,
@@ -372,14 +372,20 @@ class AbrainModel():
     def choose_action(self, state, pro_step_num, step_num):
         mutetu = pro_step_num / (step_num * 2)
         if random.random() >= mutetu:
-            duration_num = random.randint(0, ACTION_DIM-1)
-            print("随机位置:", duration_num, end=" ")
-        else:
+            # duration_num = random.randint(0, ACTION_DIM-1)
+            # print("随机位置:", duration_num, end=" ")
             duration_num = self.DQN_eval(state)
             # print(duration_num)
             duration_num = np.array(duration_num.detach().cpu()[0])
             duration_num = sample_select_action(duration_num)
             # duration_num = int(duration_num.argmax())
+            print("网络采样位置:", duration_num, end=" ")
+        else:
+            duration_num = self.DQN_eval(state)
+            # print(duration_num)
+            duration_num = np.array(duration_num.detach().cpu()[0])
+            # duration_num = sample_select_action(duration_num)
+            duration_num = int(duration_num.argmax())
             print("网络预测位置:", duration_num, end=" ")
         return duration_num
 
@@ -418,8 +424,8 @@ class AbrainModel():
     def action_judge(self, gamescore, pro_action_num, action_num):
         # reward = round(float(int(gamescore) / 60), 2)
         reward = 1.0
-        if pro_action_num == action_num:
-            reward = -1.2
+        # if pro_action_num == action_num:
+        #     reward = -0.4
         # if STORAGE_TARGET >= reward:
         #     reward = -round(float(math.sqrt(STORAGE_TARGET - reward)), 2)
         return reward
