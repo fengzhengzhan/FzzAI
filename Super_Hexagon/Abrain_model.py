@@ -311,7 +311,7 @@ class EfficientNet(nn.Module):
         classifier = []
         if dropout_rate > 0:
             classifier.append(nn.Dropout(p=dropout_rate, inplace=True))
-        classifier.append(NoisyFactorizedLinear(last_conv_output_c, num_classes))
+        classifier.append(nn.Linear(last_conv_output_c, num_classes))
         self.classifier = nn.Sequential(*classifier)
 
         # initial weights
@@ -347,7 +347,6 @@ def efficientnet_b0(num_classes=ACTION_DIM):
                         dropout_rate=0.2,
                         num_classes=num_classes)
 
-
 '''
 ===================================== DQN ===================================== 
 '''
@@ -355,6 +354,7 @@ class AbrainModel():
     def __init__(self):
         self.DQN_eval = efficientnet_b0(num_classes=ACTION_DIM).to(DEVICE)
         self.DQN_target = efficientnet_b0(num_classes=ACTION_DIM).to(DEVICE)
+        # self.DQN_target.load_state_dict(self.DQN_eval.state_dict())
         # parm = {}
         # for name, parameters in self.DQN_eval.named_parameters():
         #     print(name, ':', parameters.size())
@@ -374,30 +374,31 @@ class AbrainModel():
         if random.random() >= mutetu:
             # duration_num = random.randint(0, ACTION_DIM-1)
             # print("随机位置:", duration_num, end=" ")
+
             duration_num = self.DQN_eval(state)
             # print(duration_num)
             duration_num = np.array(duration_num.detach().cpu()[0])
             duration_num = sample_select_action(duration_num)
             # duration_num = int(duration_num.argmax())
-            print("网络采样位置:", duration_num, end=" ")
+            print("采样:", duration_num, end=" ")
         else:
             duration_num = self.DQN_eval(state)
             # print(duration_num)
             duration_num = np.array(duration_num.detach().cpu()[0])
             # duration_num = sample_select_action(duration_num)
             duration_num = int(duration_num.argmax())
-            print("网络预测位置:", duration_num, end=" ")
+            print("预测位置:", duration_num, end=" ")
         return duration_num
 
 
     # 经验回放
     def train_network(self, replay, lossprintflag, num_step, per_step, batch_size=BATCH_SIZE):
         # 软更新网络参数
-        # for target_param, param in zip(self.DQN_target.parameters(), self.DQN_eval.parameters()):
-        #     target_param.data.copy_(target_param.data * (1.0 - TAU) + param.data * TAU)
+        for target_param, param in zip(self.DQN_target.parameters(), self.DQN_eval.parameters()):
+            target_param.data.copy_(target_param.data * (1.0 - TAU) + param.data * TAU)
         # 直接更新
-        if num_step % UPDATE_TIME == 0 and per_step == 1:
-            self.DQN_target.load_state_dict(self.DQN_eval.state_dict())
+        # if num_step % UPDATE_TIME == 0 and per_step == 1:
+        #     self.DQN_target.load_state_dict(self.DQN_eval.state_dict())
 
         # step 1: 从 replay memory 随机采样  # TODO 线程sumtree!
         state_batch, action_batch, reward_batch, next_state_batch = replay.get(batch_size)
@@ -408,7 +409,8 @@ class AbrainModel():
         q = self.DQN_eval(state_batch).gather(1, action_batch)
         q_next = self.DQN_target(next_state_batch).detach().max(1)[0].reshape(-1, 1)
         tq = reward_batch + GAMMA * q_next
-        # print(q, tq)
+        # tq = reward_batch
+        # print(q, tq, reward_batch)
 
         loss = self.loss_td(q, tq)
 
@@ -421,13 +423,60 @@ class AbrainModel():
             print("[*] Loss:", loss)
 
 
-    def action_judge(self, gamescore, pro_action_num, action_num):
+    def action_judge(self, gamescore, pro_action_num, action_num, area, next_area):
+        # print(area, next_area)
+
+        reward = round(float(int(gamescore) / 60), 2)
+
+        if len(area[1]) != 0 and len(next_area[1]) != 0 \
+                and len(area[2]) != 0 and len(next_area[2]) != 0:
+            cid = 3
+            # 先右再左
+            if 0.1 <= area[0][3] <= 0.3:
+                cid = 3
+            elif 0.1 <= area[0][4] <= 0.3:
+                cid = 4
+            elif 0.1 <= area[0][2] <= 0.3:
+                cid = 2
+            elif 0.1 <= area[0][5] <= 0.3:
+                cid = 5
+            elif 0.1 <= area[0][1] <= 0.3:
+                cid = 1
+            elif 0.1 <= area[0][0] <= 0.3:
+                cid = 0
+            first_distance = math.sqrt( (area[1][cid][0] - area[2][0])**2 + (area[1][cid][1] - area[2][1])**2 )
+
+            ncid = 3
+            if 0.1 <= next_area[0][3] <= 0.3:
+                ncid = 3
+            elif 0.1 <= next_area[0][4] <= 0.3:
+                ncid = 4
+            elif 0.1 <= next_area[0][2] <= 0.3:
+                ncid = 2
+            elif 0.1 <= next_area[0][5] <= 0.3:
+                ncid = 5
+            elif 0.1 <= next_area[0][1] <= 0.3:
+                ncid = 1
+            elif 0.1 <= next_area[0][0] <= 0.3:
+                ncid = 0
+            second_distance = math.sqrt( (next_area[1][ncid][0] - next_area[2][0])**2 + (next_area[1][cid][1] - next_area[2][1])**2 )
+
+            reward += (first_distance - second_distance) / 2
+            # print(first_distance, second_distance, reward)
+
+        if pro_action_num == action_num:
+            reward -= 1
+
+        # print(astate[action_num], reward)
         # reward = round(float(int(gamescore) / 60), 2)
-        reward = 1.0
+
+        # reward = 1.0
+
         # if pro_action_num == action_num:
         #     reward = -0.4
         # if STORAGE_TARGET >= reward:
         #     reward = -round(float(math.sqrt(STORAGE_TARGET - reward)), 2)
+
         return reward
 
 

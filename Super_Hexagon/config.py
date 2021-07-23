@@ -6,11 +6,13 @@ import os
 ACTION_STEPS = [-0.4, -0.39, -0.38, -0.37, -0.36, -0.35, -0.34, -0.33, -0.32, -0.31,
                 -0.3, -0.29, -0.28, -0.27, -0.26, -0.25, -0.24, -0.23, -0.22, -0.21,
                 -0.2, -0.19, -0.18, -0.17, -0.16, -0.15, -0.14, -0.13, -0.12, -0.11,
-                -0.1, -0.09, -0.08, -0.07, -0.06, -0.05, -0.04, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
+                -0.1, -0.09, -0.08, -0.07, -0.06, -0.05, -0.04,
+                0.00, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09,
                 0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19,
                 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29,
                 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4]
-ACTION_DIM = 74
+# ACTION_STEPS = [0.40, 0.26, 0.12, 0.00, -0.12, -0.26]  # 左 -> 右
+ACTION_DIM = 75
 MODEL_FILENAME = "SuperHexagonModel"
 
 KERNEL_SIZE = (14, 25)
@@ -28,7 +30,7 @@ MU = 0.6
 MU_RATE = 0.995
 SIGMA = 0.8
 SIGMA_RATE = 0.996
-RANDOM_EPISODE = 1000
+RANDOM_EPISODE = 300
 BATCH_SIZE = 12
 
 FORWARD_SCALE = 0.8  # scale for loss function of forward prediction model, 0.8
@@ -42,11 +44,20 @@ MODEL_WEIGHT_PATH = "efficientnetb0.pth"
 
 
 # Aeye_grabscreen
-SUPERHEXAGON_WINDOW = (1, 79, 768, 508)  # (0, 32, 768, 508)   384 238
+SUPERHEXAGON_WINDOW = (101, 81, 668, 508)     # (0, 32, 768, 508)   384 238
 MANAGER_LIST_LENGTH = 16
-RESIZE_WINDOW = (384, 215)  # (WIDTH, HEIGHT)
+NUMPY_VALUE = 0.1
+RESIZE_WINDOW = (284, 214)  # (WIDTH, HEIGHT)
 SLEEP_SCREEN = 0.02  # 每秒帧数，同步帧率   (0.02, 0.16)
 SLEEP_INIT_GRAB = 2  # 先开启截取屏幕进程，并等待时间填充满缓冲数组
+
+GRAY_IMAGE_COLOR = 1.0
+
+CENTER_POINT = [142, 96]  # (WIDTH, HEIGHT)
+FOURBARRIER_DISTANCE = [35, 90]# 障碍距离范围
+BARRIER_LENGTH_AREA = [20, 80]  # 障碍横向宽度范围
+BARRIER_DISTANCE = [35, 90]# 障碍距离范围
+
 
 
 # Amemory_replaybuffer
@@ -76,7 +87,7 @@ GLOBAL_BEST_REWARD = 10
 TRAINSTORAGELEN = 260  # 200训练条件: 回放池超过数量 #TODO
 TRAINEPISODELEN = 2  # 训练条件: 轮数 #TODO
 TRAININGDURATION = 2  # 持续时间 s
-TRAINPERNUM = 3  # 持续次数
+TRAINPERNUM = 2  # 持续次数
 
 SLEEP_BREAK = 0.04
 SLEEP_GAME = 1
@@ -94,7 +105,7 @@ if VALIDATION_EXPERIMENT:
     SCALE_VALUE = 2
     LR_A = 0.0001
     LR_C = 0.0002
-    GAMMA = 0.7
+    GAMMA = 0.9
     TAU = 0.01
     BATCH_SIZE = 16
     RENDER = True

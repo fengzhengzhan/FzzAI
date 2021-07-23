@@ -95,18 +95,21 @@ def sample_select_action(x):
 
 # 箭头移动  0.4s半圈
 def move(value, printflag):
-    if value >= 0.0:
+    if value >= 0.04:
         PressKey(A)
         time.sleep(value)
         ReleaseKey(A)
         if printflag:
-            print(" 操作向左->{}s".format(value))
-    elif value < 0.0:
+            print(" 操作向左->{}s".format(value), end="\n")
+    elif value < -0.04:
         PressKey(D)
         time.sleep(-value)
         ReleaseKey(D)
         if printflag:
-            print(" 操作向右->{}s".format(-value))
+            print(" 操作向右->{}s".format(-value), end="\n")
+    else:
+        time.sleep(abs(value)+0.04)
+        print(" 操作->静止", end="\n")
 
 # 辅助功能函数
 def p_pause():
@@ -133,5 +136,7 @@ def init_startgame():
 if __name__ == "__main__":
     handle_top()
     init_startgame()
-    move(value=0.4, printflag=True)
-
+    for i in range(10):
+        move(value=0.04, printflag=True)
+        move(value=-0.04, printflag=True)
+        time.sleep(0.2)
