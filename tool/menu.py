@@ -1,7 +1,15 @@
-def print_logo():
-    print("""
+
+
+
+class Menu(object):
+    def __init__(self):
+        pass
+
+
+    def printLogo(self):
+        print("""
  #############################################################################
-                                                                           
+
 ##  FFFFFFFFFFF                                   AA            IIIIIIIIII   ##
 ##  FFFFFFFFFF                                   AAAA           IIIIIIIIII   ##
 ##  FFF                                         AAAAAA             IIII      ##
@@ -14,9 +22,8 @@ def print_logo():
 ##                                                                           ##
 ##                                                                           ##
 ##           (^_^)#                                                          ##
-                Author:Feng Zhengzhan   Game:Super Hexagon              
+                Author:Feng Zhengzhan            
  #############################################################################
-    """)
-    print(" (^_^)# 欢迎使用烽征战-游戏AI项目")
-    print(" (^_^)# 游戏早日通关，生活更加快乐哟 ")
-
+        """)
+        # print(" (^_^)# 欢迎使用烽征战-游戏AI项目")
+        # print(" (^_^)# 游戏早日通关，生活更加快乐哟 ")
