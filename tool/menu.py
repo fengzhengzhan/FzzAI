@@ -5,6 +5,8 @@ class Menu(object):
     def __init__(self):
         pass
 
+    def selectAgent(self):
+        pass
 
     def printLogo(self):
         print("""
