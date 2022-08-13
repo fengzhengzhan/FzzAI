@@ -1,8 +1,9 @@
 # Custom
-manual-simulation/
+manual_simulation/
 conf.yaml
-secret-config.py
-autosave-model/
+secret_config.py
+autosave_model/
+other/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

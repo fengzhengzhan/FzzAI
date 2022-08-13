@@ -1,6 +1,10 @@
 
 
 class Body(object):
+    """
+    执行信息：将动作信息映射到输出设备上执行动作。
+    Execution information: Maps the action information to the output device to execute the action.
+    """
     def __init__(self):
         pass
 
