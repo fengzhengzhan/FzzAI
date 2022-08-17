@@ -8,6 +8,9 @@ class Brain(object):
     def __init__(self):
         pass
 
+    def beliefSystem(self):
+        # 信念系统
+        pass
 
     def brain(self):
         pass

@@ -6,6 +6,11 @@ class HollowKnight(object):
     def birth(self):
         pass
 
+    def grow(self):
+        pass
+
+    def fight(self):
+        pass
 
     def die(self):
         pass

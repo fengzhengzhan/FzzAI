@@ -1,17 +1,13 @@
 
-from enum import Enum
-
-# agent-sense
+# agent_sense
 
 # Vision
-class VIS(Enum):
-    """
-    枚举传入的视觉数组类型的序列号。
-    Enumerate the sequence number of the incoming visual array type.
-    """
-    NUM = 0
-    HANDLE = 1
-    SIZE = 2
-    MODE = 3
+# 枚举传入的视觉数组类型的序列号。
+# Enumerate the sequence number of the incoming visual array type.
+VIS_IDX_NUM = 0 # 所取得的图片数量
+VIS_IDX_HANDLE = 1  # 窗口句柄
+VIS_IDX_SIZE = 2  # 所获得的视觉窗口的尺寸大小()
+VIS_IDX_MODE = 3  # 如图片相减之类的方式
+VIS_IDX_FUNC = 4  # 使用函数所规定的方式处理图片
 
 

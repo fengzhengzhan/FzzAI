@@ -1,4 +1,4 @@
-# FzAI
+# FzzAI
 
 ## Pytorch_Knight
 
