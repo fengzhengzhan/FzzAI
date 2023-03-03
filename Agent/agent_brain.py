@@ -9,7 +9,7 @@ class Brain(object):
         pass
 
     def beliefSystem(self):
-        # 信念系统
+        # 信念系统  超越本身
         pass
 
     def brain(self):
