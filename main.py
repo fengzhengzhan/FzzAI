@@ -1,5 +1,3 @@
-
-
 from tool.menu import Menu
 from config import *
 
