@@ -1,10 +1,10 @@
 # Custom
-secret_config.py
+secret_conf.py
 
 dataset_manual_simulation/
 dataset_autosave_model/
 test/
-archive/
+# archive/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
