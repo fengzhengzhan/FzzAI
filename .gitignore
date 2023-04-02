@@ -1,8 +1,8 @@
 # Custom
 secret_conf.py
 
-dataset_manual_simulation/
-dataset_autosave_model/
+dataset_manual/
+dataset_autosave/
 test/
 # archive/
 
