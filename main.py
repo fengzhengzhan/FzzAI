@@ -1,5 +1,4 @@
-from tool.menu import Menu
-from config import *
+from dependencies import *
 
 def main():
     """
