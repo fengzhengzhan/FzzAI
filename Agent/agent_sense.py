@@ -1,9 +1,4 @@
-
-from config import *
-import numpy as np
-import win32gui, win32ui, win32con, win32api
-
-from multiprocessing import Process, Manager
+from dependencies import *
 
 
 class Sense(object):
@@ -11,6 +6,7 @@ class Sense(object):
     输入信息：项目以输入的感官信息作为分析执行依据。
     Input information: The project uses the input sensory information as the basis for analysis and execution.
     """
+
     def __init__(self):
         super(Sense, self).__init__()
 
@@ -18,14 +14,7 @@ class Sense(object):
         pass
 
     def visionInit(self, vision_list: list):
-
-
-
-
-
-
-
-
+        pass
 
     def visionScreen(self):
         # 获取
@@ -36,7 +25,6 @@ class Sense(object):
         height = win32api.GetSystemMetrics(win32con.SM_CYVIRTUALSCREEN)
         left = win32api.GetSystemMetrics(win32con.SM_XVIRTUALSCREEN)
         top = win32api.GetSystemMetrics(win32con.SM_YVIRTUALSCREEN)
-
 
         hwindc = win32gui.GetWindowDC(hwin)
         srcdc = win32ui.CreateDCFromHandle(hwindc)
@@ -55,8 +43,6 @@ class Sense(object):
         win32gui.ReleaseDC(hwin, hwindc)
         win32gui.DeleteObject(bmp.GetHandle())
 
-
-
     def vision(self):
         pass
 
@@ -74,5 +60,3 @@ class Sense(object):
 
     def perception(self):
         pass
-
-
