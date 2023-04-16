@@ -66,43 +66,53 @@ class ActionKeyboard:
 
     def __init__(self, short_during_time=0.05, long_during_time=0.2):
         # 虚拟键码
-        self.__DWFLAGS_PRESSKEY = 0x0000
-        self.__DWFLAGS_RELEASEKEY = 0x0000 | 0x0002
+        # self.__DWFLAGS_PRESSKEY = 0x0000
+        # self.__DWFLAGS_RELEASEKEY = 0x0000 | 0x0002
         # 硬件扫描码
-        # self.__dwflags_presskey = 0x0008
-        # self.__dwflags_releasekey = 0x0008 | 0x0002
+        self.__DWFLAGS_PRESSKEY = 0x0008
+        self.__DWFLAGS_RELEASEKEY = 0x0008 | 0x0002
 
         self.__short_during_time = short_during_time
         self.__long_during_time = long_during_time
 
-        self.key = {'ESC': 0x1B, 'F1': 0x70, 'F2': 0x71, 'F3': 0x72, 'F4': 0x73, 'F5': 0x74, 'F6': 0x75,
-                    'F7': 0x76, 'F8': 0x77, 'F9': 0x78, 'F10': 0x79, 'F11': 0x7A, 'F12': 0x7B,
-                    '`': 0xC0, '0': 0x30,
+        # 虚拟键码
+        # self.key = {'ESC': 0x1B, 'F1': 0x70, 'F2': 0x71, 'F3': 0x72, 'F4': 0x73, 'F5': 0x74, 'F6': 0x75,
+        #             'F7': 0x76, 'F8': 0x77, 'F9': 0x78, 'F10': 0x79, 'F11': 0x7A, 'F12': 0x7B,
+        #             '`': 0xC0, '0': 0x30,
+        #
+        #             'E': 0x45, 'W': 0x57,
+        #
+        #             'I': 0x49,
+        #             'J': 0x24,
+        #             'K': 0x25,
+        #             'L': 0x26, }
 
-                    'I': 0x49,
-                    'J': 0x24,
-                    'K': 0x25,
-                    'L': 0x26, }
+        # 硬件扫描码
+        self.key = {'E': 0x12, 'W': 0x11}
 
     def __operateKey(self, hex_key_code, dwflags):
         uki = UnionKeyInput()
-        uki.ki = StructKeyBdInput(hex_key_code, 0, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))
+        # uki.ki = StructKeyBdInput(hex_key_code, 0, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))  # 虚拟键码
+        uki.ki = StructKeyBdInput(0, hex_key_code, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))  # 虚拟键码
         si = StructInput(ctypes.c_ulong(1), uki)
         ctypes.windll.user32.SendInput(1, ctypes.pointer(si), ctypes.sizeof(si))
 
-    def __finKey(self, hex_key_code, during_time):
+    def __finishKey(self, hex_key_code, during_time):
         self.__operateKey(hex_key_code, self.__DWFLAGS_PRESSKEY)
         time.sleep(during_time)
         self.__operateKey(hex_key_code, self.__DWFLAGS_RELEASEKEY)
 
     def shortKey(self, hex_key_code):
-        self.__finKey(hex_key_code, self.__short_during_time)
+        self.__finishKey(hex_key_code, self.__short_during_time)
 
     def longKey(self, hex_key_code):
-        self.__finKey(hex_key_code, self.__long_during_time)
+        self.__finishKey(hex_key_code, self.__long_during_time)
+
+    def duringKey(self, hex_key_code, during_time):
+        self.__finishKey(hex_key_code, during_time)
 
     def customTimeKey(self, hex_key_code, during_time):
-        self.__finKey(hex_key_code, during_time)
+        self.__finishKey(hex_key_code, during_time)
 
     def doubleKey(self, hex_key_code):
         self.shortKey(hex_key_code)
@@ -143,10 +153,12 @@ class ActionMouse:
         return (int(position.x), int(position.y))
 
     def __generateRandlist(self, n, target_sum):
-        # 生成一个随机数组，其中中间值较大，两头较小
-        # n：数组元素个数
-        # target_sum：数组的和
-
+        """
+        生成一个随机数组，其中中间值较大，两头较小
+        参数：
+            n：数组元素个数
+            target_sum：数组的和
+        """
         # 生成一个初始的随机数组
         rand_array = [random.random() for _ in range(n)]
 
@@ -231,7 +243,6 @@ class ActionMouse:
         self.__operateMouse(dwflags_down)
         self.move(ex, ey)
         self.__operateMouse(dwflags_up)
-
 
 
 # Actuals Functions
@@ -557,115 +568,6 @@ class ActionMouse:
 #     print("[+] Enter start...")
 
 
-# SendInput = ctypes.windll.user32.SendInput
-#
-# PUL = ctypes.POINTER(ctypes.c_ulong)
-
-#
-# class KeyBdInput(ctypes.Structure):
-#     _fields_ = [("wVk", ctypes.c_ushort),
-#                 ("wScan", ctypes.c_ushort),
-#                 ("dwFlags", ctypes.c_ulong),
-#                 ("time", ctypes.c_ulong),
-#                 ("dwExtraInfo", PUL)]
-#
-#
-# class HardwareInput(ctypes.Structure):
-#     _fields_ = [("uMsg", ctypes.c_ulong),
-#                 ("wParamL", ctypes.c_short),
-#                 ("wParamH", ctypes.c_ushort)]
-#
-#
-# class MouseInput(ctypes.Structure):
-#     _fields_ = [("dx", ctypes.c_long),
-#                 ("dy", ctypes.c_long),
-#                 ("mouseData", ctypes.c_ulong),
-#                 ("dwFlags", ctypes.c_ulong),
-#                 ("time", ctypes.c_ulong),
-#                 ("dwExtraInfo", PUL)]
-#
-#
-# class Input_I(ctypes.Union):
-#     _fields_ = [("ki", KeyBdInput),
-#                 ("mi", MouseInput),
-#                 ("hi", HardwareInput)]
-#
-#
-# class Input(ctypes.Structure):
-#     _fields_ = [("type", ctypes.c_ulong),
-#                 ("ii", Input_I)]
-
-
-class POINT(ctypes.Structure):
-    _fields_ = [("x", ctypes.c_ulong), ("y", ctypes.c_ulong)]
-
-
-# Actuals Functions
-
-# def PressKey(hexKeyCode):
-#     extra = ctypes.c_ulong(0)
-#     FInputs = Input * 1
-#     ii_ = Input_I()
-#     ii_.ki = KeyBdInput(0, hexKeyCode, 0x0008, 0, ctypes.pointer(extra))
-#     x = Input(ctypes.c_ulong(1), ii_)
-#     ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
-#
-#
-# def ReleaseKey(hexKeyCode):
-#     extra = ctypes.c_ulong(0)
-#     ii_ = Input_I()
-#     ii_.ki = KeyBdInput(0, hexKeyCode, 0x0008 | 0x0002, 0, ctypes.pointer(extra))
-#     x = Input(ctypes.c_ulong(1), ii_)
-#     ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
-
-
-def get_mpos():
-    orig = POINT()
-    ctypes.windll.user32.GetCursorPos(ctypes.byref(orig))
-    return int(orig.x), int(orig.y)
-
-
-def set_mpos(pos):
-    x, y = pos
-    ctypes.windll.user32.SetCursorPos(x, y)
-
-
-def mouse_press(pos, button='left'):
-    i = 2
-    if button == 'right':
-        i = 8
-    set_mpos(pos)
-    extra = ctypes.c_ulong(0)
-    ii_ = UnionKeyInput()
-    ii_.mi = StructMouseInput(0, 0, 0, i, 0, ctypes.pointer(extra))
-    x = StructInput(ctypes.c_ulong(0), ii_)
-    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
-
-
-# def mouse_release(pos, windowName=se, button='left'):
-#     i = 4
-#     if button == 'right':
-#         i = 16
-#     set_mpos(x, y)
-#     extra = ctypes.c_ulong(0)
-#     ii_ = Input_I()
-#     ii_.mi = MouseInput(0, 0, 0, i, 0, ctypes.pointer(extra))
-#     x = Input(ctypes.c_ulong(0), ii_)
-#     ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
-
-
-def mouse_release(pos, button='left'):
-    i = 4
-    if button == 'right':
-        i = 16
-    set_mpos(pos)
-    extra = ctypes.c_ulong(0)
-    ii_ = UnionKeyInput()
-    ii_.mi = StructMouseInput(0, 0, 0, i, 0, ctypes.pointer(extra))
-    x = StructInput(ctypes.c_ulong(0), ii_)
-    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
-
-
 class Action:
     def __init__(self, keyboard=False, mouse=False, xbox=False, video=False, audio=False):
         self.keyboard = ActionKeyboard()
@@ -682,13 +584,14 @@ if __name__ == "__main__":
     # action.mouse.moveReletiveFast(100, 200)
     # action.mouse.moveAbsoluteFast(100, 200)
     # action.mouse.moveReletive(100, 200)
-    # while True:
-    #     time.sleep(3)
-    #     print(action.mouse.getPosition())
-    #     action.mouse.move(1000, 500)
-    #     print(action.mouse.getPosition())
+    while True:
+        time.sleep(0.5)
+        action.keyboard.duringKey(action.keyboard.key['E'], 0.8)
+        # print(action.mouse.getPosition())
+        # action.mouse.move(1000, 500)
+        # print(action.mouse.getPosition())
     # action.mouse.click(action.mouse.key['right'])
-    action.mouse.drag(action.mouse.key['left'], 500, 300, 800, 500)
+    # action.mouse.drag(action.mouse.key['left'], 500, 300, 800, 500)
 
     # print(action.mouse.generateRandlist(10, 1))
     # print(action.mouse.generateRandlist(10, 1))

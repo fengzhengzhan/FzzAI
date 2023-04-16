@@ -1,4 +1,4 @@
-
+from dependencies import *
 
 class CommunicateManager:
     """
