@@ -1,7 +1,4 @@
-import threading
-
-from multiprocessing import Process,Queue
-from tkinter import *
+from dependencies import *
 
 class Display(object):
     """

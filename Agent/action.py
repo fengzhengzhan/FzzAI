@@ -75,25 +75,56 @@ class ActionKeyboard:
         self.__short_during_time = short_during_time
         self.__long_during_time = long_during_time
 
-        # 虚拟键码
-        # self.key = {'ESC': 0x1B, 'F1': 0x70, 'F2': 0x71, 'F3': 0x72, 'F4': 0x73, 'F5': 0x74, 'F6': 0x75,
-        #             'F7': 0x76, 'F8': 0x77, 'F9': 0x78, 'F10': 0x79, 'F11': 0x7A, 'F12': 0x7B,
-        #             '`': 0xC0, '0': 0x30,
-        #
-        #             'E': 0x45, 'W': 0x57,
-        #
-        #             'I': 0x49,
-        #             'J': 0x24,
-        #             'K': 0x25,
-        #             'L': 0x26, }
+        # 虚拟键码：104键横向排列
+        self.key = {
+            'ESC': 0x1B, 'F1': 0x70, 'F2': 0x71, 'F3': 0x72, 'F4': 0x73, 'F5': 0x74, 'F6': 0x75,
+            'F7': 0x76, 'F8': 0x77, 'F9': 0x78, 'F10': 0x79, 'F11': 0x7A, 'F12': 0x7B,
+            '`': 0xC0, '1': 0x31, '2': 0x32, '3': 0x33, '4': 0x34, '5': 0x35, '6': 0x36, '7': 0x37,
+            '8': 0x38, '9': 0x39, '0': 0x30, '-': 0xBD, '=': 0xBB, 'Backspace': 0x08,
+            'Tab': 0x09, 'Q': 0x51, 'W': 0x57, 'E': 0x45, 'R': 0x52, 'T': 0x54, 'Y': 0x59, 'U': 0x55,
+            'I': 0x49, 'O': 0x4F, 'P': 0x50, '[': 0xDB, ']': 0xDD, '\\': 0xDC,
+            'CapsLock': 0x14, 'A': 0x41, 'S': 0x53, 'D': 0x44, 'F': 0x46, 'G': 0x47, 'H': 0x48, 'J': 0x4A,
+            'K': 0x4B, 'L': 0x4C, ';': 0xBA, '\'': 0xDE, 'Enter': 0x0D,
+            'LeftShift': 0xA0, 'Z': 0x5A, 'X': 0x58, 'C': 0x43, 'V': 0x56, 'B': 0x42, 'N': 0x4E,
+            'M': 0x4D, ',': 0xBC, '.': 0xBE, '/': 0xBF, 'RightShift': 0xA1,
+            'LeftCtrl': 0xA2, 'LeftWin': 0x5B, 'LeftAlt': 0xA4, 'Space': 0x20, 'RightAlt': 0xA5,
+            'RightWin': 0x5C, 'RightCtrl': 0xA3, 'Fn': 0x00,
+            'PrintScreen': 0x2C, 'ScrollLock': 0x91, 'PauseBreak': 0x13,
+            'Insert': 0x2D, 'Home': 0x24, 'PageUp': 0x21,
+            'Delete': 0x2E, 'End': 0x23, 'PageDown': 0x22,
+            'Up': 0x26, 'Left': 0x25, 'Down': 0x28, 'Right': 0x27,
+            'NumLock': 0x90, 'Num/': 0x6F, 'Num*': 0x6A, 'Num-': 0x6D, 'Num7': 0x67, 'Num8': 0x68, 'Num9': 0x69,
+            'Num4': 0x64, 'Num5': 0x65, 'Num6': 0x66, 'Num+': 0x6B, 'Num1': 0x61, 'Num2': 0x62, 'Num3': 0x63,
+            'Num0': 0x60, 'Num.': 0x6E, 'NumEnter': 0x0D,
+        }
 
-        # 硬件扫描码
-        self.key = {'E': 0x12, 'W': 0x11}
+        # 硬件扫描码，扫描码基于 IBM PC 兼容键盘
+        self.key = {
+            'ESC': 0x01, 'F1': 0x3B, 'F2': 0x3C, 'F3': 0x3D, 'F4': 0x3E, 'F5': 0x3F, 'F6': 0x40,
+            'F7': 0x41, 'F8': 0x42, 'F9': 0x43, 'F10': 0x44, 'F11': 0x57, 'F12': 0x58,
+            '`': 0x29, '1': 0x02, '2': 0x03, '3': 0x04, '4': 0x05, '5': 0x06, '6': 0x07, '7': 0x08,
+            '8': 0x09, '9': 0x0A, '0': 0x0B, '-': 0x0C, '=': 0x0D, 'Backspace': 0x0E,
+            'Tab': 0x0F, 'Q': 0x10, 'W': 0x11, 'E': 0x12, 'R': 0x13, 'T': 0x14, 'Y': 0x15, 'U': 0x16,
+            'I': 0x17, 'O': 0x18, 'P': 0x19, '[': 0x1A, ']': 0x1B, '\\': 0x2B,
+            'CapsLock': 0x3A, 'A': 0x1E, 'S': 0x1F, 'D': 0x20, 'F': 0x21, 'G': 0x22, 'H': 0x23, 'J': 0x24,
+            'K': 0x25, 'L': 0x26, ';': 0x27, '\'': 0x28, 'Enter': 0x1C,
+            'LeftShift': 0x2A, 'Z': 0x2C, 'X': 0x2D, 'C': 0x2E, 'V': 0x2F, 'B': 0x30, 'N': 0x31,
+            'M': 0x32, ',': 0x33, '.': 0x34, '/': 0x35, 'RightShift': 0x36,
+            'LeftCtrl': 0x1D, 'LeftWin': 0xE05B, 'LeftAlt': 0x38, 'Space': 0x39, 'RightAlt': 0xE038,
+            'RightWin': 0xE05C, 'RightCtrl': 0xE01D, # 'Fn': None,
+            'PrintScreen': 0xE037, 'ScrollLock': 0x46, 'PauseBreak': 0xE11D45,
+            'Insert': 0xE052, 'Home': 0xE047, 'PageUp': 0xE049,
+            'Delete': 0xE053, 'End':0xE04F, 'PageDown': 0xE051,
+            'Up': 0xE048, 'Left': 0xE04B, 'Down': 0xE050, 'Right': 0xE04D,
+            'NumLock': 0x45, 'Num/': 0xE035, 'Num*': 0x37, 'Num-': 0x4A, 'Num7': 0x47, 'Num8': 0x48, 'Num9': 0x49,
+            'Num4': 0x4B, 'Num5': 0x4C, 'Num6': 0x4D, 'Num+': 0x4E, 'Num1': 0x4F, 'Num2': 0x50, 'Num3': 0x51,
+            'Num0': 0x52, 'Num.': 0x53, 'NumEnter': 0xE01C,
+        }
 
     def __operateKey(self, hex_key_code, dwflags):
         uki = UnionKeyInput()
         # uki.ki = StructKeyBdInput(hex_key_code, 0, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))  # 虚拟键码
-        uki.ki = StructKeyBdInput(0, hex_key_code, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))  # 虚拟键码
+        uki.ki = StructKeyBdInput(0, hex_key_code, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))  # 硬件扫描码
         si = StructInput(ctypes.c_ulong(1), uki)
         ctypes.windll.user32.SendInput(1, ctypes.pointer(si), ctypes.sizeof(si))
 
@@ -173,19 +204,19 @@ class ActionMouse:
 
         return final_array
 
-    def move(self, dx, dy, dtime=None):
+    def __move(self, x, y, dtime=None):
         # 平滑移动：将鼠标移动至指定位置(x, y)
         # 模拟移动策略：移动步数随机化；移动距离两头慢中间快；移动休眠时间两头慢中间快；移动总时间长度越长时间越长
         steps = random.randint(7, 11)  # 移动步数随机化
         x_pos, y_pos = self.getPosition()
 
         # 移动总时间长度越长时间越长
-        x_dis, y_dis = dx - x_pos, dy - y_pos
+        x_dis, y_dis = x - x_pos, y - y_pos
         x_screen, y_screen = self.getScreenSize()
         if dtime == None:
-            if (x_dis <= x_screen // 4) and (y_dis <= y_screen // 4):
+            if (abs(x_dis) <= x_screen // 4) and (abs(y_dis) <= y_screen // 4):
                 dtime = 0.02
-            elif (x_dis <= x_screen // 2) and (y_dis <= y_screen // 2):
+            elif (abs(x_dis) <= x_screen // 2) and (abs(y_dis) <= y_screen // 2):
                 dtime = 0.03
             else:
                 dtime = 0.05
@@ -203,7 +234,22 @@ class ActionMouse:
             ctypes.windll.user32.SetCursorPos(int(x_current), int(y_current))  # 不产生一个鼠标事件
             x_pos, y_pos = x_current, y_current
             time.sleep(list_interval[i])
-        ctypes.windll.user32.SetCursorPos(int(dx), int(dy))
+        ctypes.windll.user32.SetCursorPos(int(x), int(y))
+
+    def moveAbsolute(self, tx, ty):
+        self.__move(tx, ty)
+
+    def moveReletive(self, dx, dy):
+        x_pos, y_pos = self.getPosition()
+        x_screen, y_screen = self.getScreenSize()
+        tx = x_pos + dx
+        ty = y_pos + dy
+
+        # 将值限制在屏幕之内
+        tx = max(0, min(tx, x_screen - 1))
+        ty = max(0, min(ty, y_screen - 1))
+
+        self.__move(tx, ty)
 
     def __operateMouse(self, dw_flags):
         mi = StructMouseInput(0, 0, 0, dw_flags, 0, ctypes.pointer(ctypes.c_ulong(0)))
@@ -239,9 +285,9 @@ class ActionMouse:
 
     def drag(self, hex_key_code, sx, sy, ex, ey):
         dwflags_down, dwflags_up = self.__mapKey(hex_key_code)
-        self.move(sx, sy)
+        self.__move(sx, sy)
         self.__operateMouse(dwflags_down)
-        self.move(ex, ey)
+        self.__move(ex, ey)
         self.__operateMouse(dwflags_up)
 
 
@@ -575,35 +621,28 @@ class Action:
 
 
 if __name__ == "__main__":
-    action = Action()
-    # action.keyboard.shortKey(action.keyboard.key['I'])
-    tx, ty = action.mouse.getPosition()
-    print(tx, ty)
-    print(action.mouse.getPosition())
-    print(action.mouse.getScreenSize())
-    # action.mouse.moveReletiveFast(100, 200)
-    # action.mouse.moveAbsoluteFast(100, 200)
-    # action.mouse.moveReletive(100, 200)
-    while True:
-        time.sleep(0.5)
-        action.keyboard.duringKey(action.keyboard.key['E'], 0.8)
-        # print(action.mouse.getPosition())
-        # action.mouse.move(1000, 500)
-        # print(action.mouse.getPosition())
+    # Unit Test
+    # action = Action()
+    # tx, ty = action.mouse.getPosition()
+    # print(tx, ty)
+    # print(action.mouse.getPosition())
+    # print(action.mouse.getScreenSize())
+    # while True:
+    #     time.sleep(2)
+        # action.mouse.moveAbsolute(1000, 500)
+        # action.mouse.moveAbsolute(200, 200)
+        # action.mouse.moveReletive(1000, 500)
     # action.mouse.click(action.mouse.key['right'])
     # action.mouse.drag(action.mouse.key['left'], 500, 300, 800, 500)
 
-    # print(action.mouse.generateRandlist(10, 1))
-    # print(action.mouse.generateRandlist(10, 1))
+    action = Action()
+    for k, v in action.keyboard.key.items():
+        time.sleep(0.2)
+        print(k, end=" ")
+        action.keyboard.shortKey(v)
 
-    # while True:
-    #     time.sleep(3)
-    #     print(get_mpos())
-    #     set_mpos((100, 200))
-    #     mouse_press((100, 200))
-    #     time.sleep(2)
-    #     mouse_release((100, 200))
-    # time.sleep(3)
+    action.keyboard.shortKey(action.keyboard.key['E'])
+
     # while True:  # 16种操作全部测试
     # i_up()
     # j_left()
