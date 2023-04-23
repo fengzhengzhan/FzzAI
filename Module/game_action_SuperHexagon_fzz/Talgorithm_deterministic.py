@@ -58,7 +58,7 @@ if __name__ == '__main__':  # 多进程freeze_support()
             move_action = ACTION_STEPS[action]
             move(move_action, True)
             print(area)
-            game_score = score.get_score()
+            game_score = score.gainValue()
             # all_reward += reward
 
             pro_action_num = action

@@ -1,3 +1,42 @@
+from dependencies import *
+
+
+class ReadScreen:
+    def __init__(self):
+        pass
+
+    def gainScreen(self):
+        # 获取图片
+        hwin = win32gui.GetDesktopWindow()
+
+        # 得到图片范围
+        width = win32api.GetSystemMetrics(win32con.SM_CXVIRTUALSCREEN)
+        height = win32api.GetSystemMetrics(win32con.SM_CYVIRTUALSCREEN)
+        left = win32api.GetSystemMetrics(win32con.SM_XVIRTUALSCREEN)
+        top = win32api.GetSystemMetrics(win32con.SM_YVIRTUALSCREEN)
+
+        hwindc = win32gui.GetWindowDC(hwin)
+        srcdc = win32ui.CreateDCFromHandle(hwindc)
+        memdc = srcdc.CreateCompatibleDC()
+        bmp = win32ui.CreateBitmap()
+        bmp.CreateCompatibleBitmap(srcdc, width, height)
+        memdc.SelectObject(bmp)
+        memdc.BitBlt((0, 0), (width, height), srcdc, (left, top), win32con.SRCCOPY)
+
+        signedIntsArray = bmp.GetBitmapBits(True)
+        img = np.frombuffer(signedIntsArray, dtype='uint8')
+        img.shape = (height, width, 4)
+
+        srcdc.DeleteDC()
+        memdc.DeleteDC()
+        win32gui.ReleaseDC(hwin, hwindc)
+        win32gui.DeleteObject(bmp.GetHandle())
+
+
+if __name__ == "__main__":
+    pass
+
+
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  8 12:14:29 2020

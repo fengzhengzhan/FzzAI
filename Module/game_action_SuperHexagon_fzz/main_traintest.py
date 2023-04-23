@@ -52,7 +52,7 @@ if __name__ == '__main__':  # 多进程freeze_support()
             # print(action)
             move_action = ACTION_STEPS[action]
             move(move_action, True)
-            game_score = score.get_score()
+            game_score = score.gainValue()
 
             next_state, next_area = screen.getstate()
             reward = agent.action_judge(game_score, pro_action_num, action, area, next_area)

@@ -1,3 +1,5 @@
+import time
+
 from dependencies import *
 
 
@@ -111,10 +113,10 @@ class ActionKeyboard:
             'LeftShift': 0x2A, 'Z': 0x2C, 'X': 0x2D, 'C': 0x2E, 'V': 0x2F, 'B': 0x30, 'N': 0x31,
             'M': 0x32, ',': 0x33, '.': 0x34, '/': 0x35, 'RightShift': 0x36,
             'LeftCtrl': 0x1D, 'LeftWin': 0xE05B, 'LeftAlt': 0x38, 'Space': 0x39, 'RightAlt': 0xE038,
-            'RightWin': 0xE05C, 'RightCtrl': 0xE01D, # 'Fn': None,
+            'RightWin': 0xE05C, 'RightCtrl': 0xE01D,  # 'Fn': None,
             'PrintScreen': 0xE037, 'ScrollLock': 0x46, 'PauseBreak': 0xE11D45,
             'Insert': 0xE052, 'Home': 0xE047, 'PageUp': 0xE049,
-            'Delete': 0xE053, 'End':0xE04F, 'PageDown': 0xE051,
+            'Delete': 0xE053, 'End': 0xE04F, 'PageDown': 0xE051,
             'Up': 0xE048, 'Left': 0xE04B, 'Down': 0xE050, 'Right': 0xE04D,
             'NumLock': 0x45, 'Num/': 0xE035, 'Num*': 0x37, 'Num-': 0x4A, 'Num7': 0x47, 'Num8': 0x48, 'Num9': 0x49,
             'Num4': 0x4B, 'Num5': 0x4C, 'Num6': 0x4D, 'Num+': 0x4E, 'Num1': 0x4F, 'Num2': 0x50, 'Num3': 0x51,
@@ -272,11 +274,18 @@ class ActionMouse:
 
         return (dwflags_down, dwflags_up)
 
-    def click(self, hex_key_code):
+    def __finishMouse(self, hex_key_code, during_time):
         dwflags_down, dwflags_up = self.__mapKey(hex_key_code)
 
         self.__operateMouse(dwflags_down)
+        time.sleep(during_time)
         self.__operateMouse(dwflags_up)
+
+    def click(self, hex_key_code):
+        self.__finishMouse(hex_key_code, 0.05)
+
+    def duringClick(self, hex_key_code, during_time):
+        self.__finishMouse(hex_key_code, during_time)
 
     def doubleClick(self, hex_key_code):
         self.click(hex_key_code)
@@ -622,6 +631,7 @@ class Action:
 
 if __name__ == "__main__":
     # Unit Test
+
     # action = Action()
     # tx, ty = action.mouse.getPosition()
     # print(tx, ty)
@@ -629,19 +639,26 @@ if __name__ == "__main__":
     # print(action.mouse.getScreenSize())
     # while True:
     #     time.sleep(2)
-        # action.mouse.moveAbsolute(1000, 500)
-        # action.mouse.moveAbsolute(200, 200)
-        # action.mouse.moveReletive(1000, 500)
+    # action.mouse.moveAbsolute(1000, 500)
+    # action.mouse.moveAbsolute(200, 200)
+    # action.mouse.moveReletive(1000, 500)
     # action.mouse.click(action.mouse.key['right'])
     # action.mouse.drag(action.mouse.key['left'], 500, 300, 800, 500)
 
-    action = Action()
-    for k, v in action.keyboard.key.items():
-        time.sleep(0.2)
-        print(k, end=" ")
-        action.keyboard.shortKey(v)
+    # action = Action()
+    # for k, v in action.keyboard.key.items():
+    #     time.sleep(0.2)
+    #     print(k, end=" ")
+    #     action.keyboard.shortKey(v)
+    #
 
-    action.keyboard.shortKey(action.keyboard.key['E'])
+    action = Action()
+    while True:
+        time.sleep(0.3)
+        action.keyboard.duringKey(action.keyboard.key['E'], 0.5)
+        # action.mouse.duringClick(action.mouse.key['left'], 0.5)
+
+    # eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
     # while True:  # 16种操作全部测试
     # i_up()
