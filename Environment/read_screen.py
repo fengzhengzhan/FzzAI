@@ -5,16 +5,19 @@ from dependencies import *
 class ReadScreen:
     def __init__(self, region=None):
         # 得到图片范围
+        self.left = win32api.GetSystemMetrics(win32con.SM_XVIRTUALSCREEN)
+        self.top = win32api.GetSystemMetrics(win32con.SM_YVIRTUALSCREEN)
+        self.width = win32api.GetSystemMetrics(win32con.SM_CXVIRTUALSCREEN)
+        self.height = win32api.GetSystemMetrics(win32con.SM_CYVIRTUALSCREEN)
+        # region (x, y, width, height)
         if region:
-            self.left, self.top, x2, y2 = region
-            self.width = x2 - self.left + 1
-            self.height = y2 - self.top + 1
-        else:
-            self.width = win32api.GetSystemMetrics(win32con.SM_CXVIRTUALSCREEN)
-            self.height = win32api.GetSystemMetrics(win32con.SM_CYVIRTUALSCREEN)
-            self.left = win32api.GetSystemMetrics(win32con.SM_XVIRTUALSCREEN)
-            self.top = win32api.GetSystemMetrics(win32con.SM_YVIRTUALSCREEN)
-            # print(width, height, left, top)
+            self.left, self.top, self.width, self.height = region
+        # print(width, height, left, top)
+
+        # region (x1, y1, x2, y2)
+        # self.left, self.top, x2, y2 = region
+        # self.width = x2 - self.left + 1
+        # self.height = y2 - self.top + 1
 
         # 创建句柄，获取图片
         self.hwin = win32gui.GetDesktopWindow()
@@ -30,22 +33,26 @@ class ReadScreen:
         win32gui.ReleaseDC(self.hwin, self.hwindc)
         win32gui.DeleteObject(self.bmp.GetHandle())
 
-    def gainScreen(self, region=None):
+    def resizeRegion(self, region):
+        self.left, self.top, self.width, self.height = region
+        self.bmp.CreateCompatibleBitmap(self.srcdc, self.width, self.height)
+
+    def gainScreen(self):
         self.memdc.SelectObject(self.bmp)
         self.memdc.BitBlt((0, 0), (self.width, self.height), self.srcdc, (self.left, self.top), win32con.SRCCOPY)
 
-        self.signedIntsArray = self.bmp.GetBitmapBits(True)
-        self.img = np.frombuffer(self.signedIntsArray, dtype='uint8')
-        self.img.shape = (self.height, self.width, 4)
+        signedIntsArray = self.bmp.GetBitmapBits(True)
+        img = np.frombuffer(signedIntsArray, dtype='uint8')
+        img.shape = (self.height, self.width, 4)
 
-        return self.img
+        return img
         # return cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
 
 
 if __name__ == '__main__':
     # ReadScreen().gainScreen()
     # left, top, x2, y2
-    main_window = (60, 99, 1219, 610)
+    main_window = (0, 0, 800, 500)
     # blood_window = (222, 95, 530, 120)
     rs = ReadScreen(main_window)
     while True:
