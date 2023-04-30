@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import win32gui
+
 from dependencies import *
 
 
 class ReadScreen:
-    def __init__(self, region=None):
+    def __init__(self, region=(0, 0, 1280, 720), name_process=None):
         # 得到图片范围
         self.left = win32api.GetSystemMetrics(win32con.SM_XVIRTUALSCREEN)
         self.top = win32api.GetSystemMetrics(win32con.SM_YVIRTUALSCREEN)
@@ -21,6 +23,8 @@ class ReadScreen:
 
         # 创建句柄，获取图片
         self.hwin = win32gui.GetDesktopWindow()
+        if name_process:
+            self.hwin = win32gui.FindWindow(None, name_process)  # 可得到指定程序的窗口句柄
         self.hwindc = win32gui.GetWindowDC(self.hwin)
         self.srcdc = win32ui.CreateDCFromHandle(self.hwindc)
         self.memdc = self.srcdc.CreateCompatibleDC()
@@ -34,10 +38,12 @@ class ReadScreen:
         win32gui.DeleteObject(self.bmp.GetHandle())
 
     def resizeRegion(self, region):
+        # 调整截图范围
         self.left, self.top, self.width, self.height = region
         self.bmp.CreateCompatibleBitmap(self.srcdc, self.width, self.height)
 
     def gainScreen(self):
+        # 得到屏幕截图
         self.memdc.SelectObject(self.bmp)
         self.memdc.BitBlt((0, 0), (self.width, self.height), self.srcdc, (self.left, self.top), win32con.SRCCOPY)
 
@@ -50,16 +56,14 @@ class ReadScreen:
 
 
 if __name__ == '__main__':
-    # ReadScreen().gainScreen()
-    # left, top, x2, y2
     main_window = (0, 0, 800, 500)
     # blood_window = (222, 95, 530, 120)
     rs = ReadScreen(main_window)
     while True:
         # 测试代码 查看窗口位置
-        second_screen_grey = cv2.cvtColor(rs.gainScreen(), cv2.COLOR_BGRA2BGR)
-        cv2.imshow("window_main", second_screen_grey)
-        cv2.moveWindow("window_main", 700, 540)
+        screen_grey = cv2.cvtColor(rs.gainScreen(), cv2.COLOR_BGRA2BGR)
+        cv2.imshow("window_main", screen_grey)
+        cv2.moveWindow("window_main", 1000, 600)
         if cv2.waitKey(1) & 0xFF == ord('a'):
             print(cv2.waitKey(1))
             break

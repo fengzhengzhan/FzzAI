@@ -78,30 +78,30 @@ class ActionKeyboard:
         self.__long_during_time = long_during_time
 
         # 虚拟键码：104键横向排列
-        self.key = {
-            'ESC': 0x1B, 'F1': 0x70, 'F2': 0x71, 'F3': 0x72, 'F4': 0x73, 'F5': 0x74, 'F6': 0x75,
-            'F7': 0x76, 'F8': 0x77, 'F9': 0x78, 'F10': 0x79, 'F11': 0x7A, 'F12': 0x7B,
-            '`': 0xC0, '1': 0x31, '2': 0x32, '3': 0x33, '4': 0x34, '5': 0x35, '6': 0x36, '7': 0x37,
-            '8': 0x38, '9': 0x39, '0': 0x30, '-': 0xBD, '=': 0xBB, 'Backspace': 0x08,
-            'Tab': 0x09, 'Q': 0x51, 'W': 0x57, 'E': 0x45, 'R': 0x52, 'T': 0x54, 'Y': 0x59, 'U': 0x55,
-            'I': 0x49, 'O': 0x4F, 'P': 0x50, '[': 0xDB, ']': 0xDD, '\\': 0xDC,
-            'CapsLock': 0x14, 'A': 0x41, 'S': 0x53, 'D': 0x44, 'F': 0x46, 'G': 0x47, 'H': 0x48, 'J': 0x4A,
-            'K': 0x4B, 'L': 0x4C, ';': 0xBA, '\'': 0xDE, 'Enter': 0x0D,
-            'LeftShift': 0xA0, 'Z': 0x5A, 'X': 0x58, 'C': 0x43, 'V': 0x56, 'B': 0x42, 'N': 0x4E,
-            'M': 0x4D, ',': 0xBC, '.': 0xBE, '/': 0xBF, 'RightShift': 0xA1,
-            'LeftCtrl': 0xA2, 'LeftWin': 0x5B, 'LeftAlt': 0xA4, 'Space': 0x20, 'RightAlt': 0xA5,
-            'RightWin': 0x5C, 'RightCtrl': 0xA3, 'Fn': 0x00,
-            'PrintScreen': 0x2C, 'ScrollLock': 0x91, 'PauseBreak': 0x13,
-            'Insert': 0x2D, 'Home': 0x24, 'PageUp': 0x21,
-            'Delete': 0x2E, 'End': 0x23, 'PageDown': 0x22,
-            'Up': 0x26, 'Left': 0x25, 'Down': 0x28, 'Right': 0x27,
-            'NumLock': 0x90, 'Num/': 0x6F, 'Num*': 0x6A, 'Num-': 0x6D, 'Num7': 0x67, 'Num8': 0x68, 'Num9': 0x69,
-            'Num4': 0x64, 'Num5': 0x65, 'Num6': 0x66, 'Num+': 0x6B, 'Num1': 0x61, 'Num2': 0x62, 'Num3': 0x63,
-            'Num0': 0x60, 'Num.': 0x6E, 'NumEnter': 0x0D,
-        }
+        # self.__scancode = {
+        #     'ESC': 0x1B, 'F1': 0x70, 'F2': 0x71, 'F3': 0x72, 'F4': 0x73, 'F5': 0x74, 'F6': 0x75,
+        #     'F7': 0x76, 'F8': 0x77, 'F9': 0x78, 'F10': 0x79, 'F11': 0x7A, 'F12': 0x7B,
+        #     '`': 0xC0, '1': 0x31, '2': 0x32, '3': 0x33, '4': 0x34, '5': 0x35, '6': 0x36, '7': 0x37,
+        #     '8': 0x38, '9': 0x39, '0': 0x30, '-': 0xBD, '=': 0xBB, 'Backspace': 0x08,
+        #     'Tab': 0x09, 'Q': 0x51, 'W': 0x57, 'E': 0x45, 'R': 0x52, 'T': 0x54, 'Y': 0x59, 'U': 0x55,
+        #     'I': 0x49, 'O': 0x4F, 'P': 0x50, '[': 0xDB, ']': 0xDD, '\\': 0xDC,
+        #     'CapsLock': 0x14, 'A': 0x41, 'S': 0x53, 'D': 0x44, 'F': 0x46, 'G': 0x47, 'H': 0x48, 'J': 0x4A,
+        #     'K': 0x4B, 'L': 0x4C, ';': 0xBA, '\'': 0xDE, 'Enter': 0x0D,
+        #     'LeftShift': 0xA0, 'Z': 0x5A, 'X': 0x58, 'C': 0x43, 'V': 0x56, 'B': 0x42, 'N': 0x4E,
+        #     'M': 0x4D, ',': 0xBC, '.': 0xBE, '/': 0xBF, 'RightShift': 0xA1,
+        #     'LeftCtrl': 0xA2, 'LeftWin': 0x5B, 'LeftAlt': 0xA4, 'Space': 0x20, 'RightAlt': 0xA5,
+        #     'RightWin': 0x5C, 'RightCtrl': 0xA3, 'Fn': 0x00,
+        #     'PrintScreen': 0x2C, 'ScrollLock': 0x91, 'PauseBreak': 0x13,
+        #     'Insert': 0x2D, 'Home': 0x24, 'PageUp': 0x21,
+        #     'Delete': 0x2E, 'End': 0x23, 'PageDown': 0x22,
+        #     'Up': 0x26, 'Left': 0x25, 'Down': 0x28, 'Right': 0x27,
+        #     'NumLock': 0x90, 'Num/': 0x6F, 'Num*': 0x6A, 'Num-': 0x6D, 'Num7': 0x67, 'Num8': 0x68, 'Num9': 0x69,
+        #     'Num4': 0x64, 'Num5': 0x65, 'Num6': 0x66, 'Num+': 0x6B, 'Num1': 0x61, 'Num2': 0x62, 'Num3': 0x63,
+        #     'Num0': 0x60, 'Num.': 0x6E, 'NumEnter': 0x0D,
+        # }
 
         # 硬件扫描码，扫描码基于 IBM PC 兼容键盘
-        self.key = {
+        self.__scancode = {
             'ESC': 0x01, 'F1': 0x3B, 'F2': 0x3C, 'F3': 0x3D, 'F4': 0x3E, 'F5': 0x3F, 'F6': 0x40,
             'F7': 0x41, 'F8': 0x42, 'F9': 0x43, 'F10': 0x44, 'F11': 0x57, 'F12': 0x58,
             '`': 0x29, '1': 0x02, '2': 0x03, '3': 0x04, '4': 0x05, '5': 0x06, '6': 0x07, '7': 0x08,
@@ -123,34 +123,35 @@ class ActionKeyboard:
             'Num0': 0x52, 'Num.': 0x53, 'NumEnter': 0xE01C,
         }
 
-    def __operateKey(self, hex_key_code, dwflags):
+    def __operateKey(self, str_key, dwflags):
+        hex_scancode = self.__scancode[str_key]
         uki = UnionKeyInput()
-        # uki.ki = StructKeyBdInput(hex_key_code, 0, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))  # 虚拟键码
-        uki.ki = StructKeyBdInput(0, hex_key_code, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))  # 硬件扫描码
+        # uki.ki = StructKeyBdInput(hex_scancode, 0, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))  # 虚拟键码
+        uki.ki = StructKeyBdInput(0, hex_scancode, dwflags, 0, ctypes.pointer(ctypes.c_ulong(0)))  # 硬件扫描码
         si = StructInput(ctypes.c_ulong(1), uki)
         ctypes.windll.user32.SendInput(1, ctypes.pointer(si), ctypes.sizeof(si))
 
-    def __finishKey(self, hex_key_code, during_time):
-        self.__operateKey(hex_key_code, self.__DWFLAGS_PRESSKEY)
+    def __finishKey(self, str_key, during_time):
+        self.__operateKey(str_key, self.__DWFLAGS_PRESSKEY)
         time.sleep(during_time)
-        self.__operateKey(hex_key_code, self.__DWFLAGS_RELEASEKEY)
+        self.__operateKey(str_key, self.__DWFLAGS_RELEASEKEY)
 
-    def shortKey(self, hex_key_code):
-        self.__finishKey(hex_key_code, self.__short_during_time)
+    def shortKey(self, str_key):
+        self.__finishKey(str_key, self.__short_during_time)
 
-    def longKey(self, hex_key_code):
-        self.__finishKey(hex_key_code, self.__long_during_time)
+    def longKey(self, str_key):
+        self.__finishKey(str_key, self.__long_during_time)
 
-    def duringKey(self, hex_key_code, during_time):
-        self.__finishKey(hex_key_code, during_time)
+    def duringKey(self, str_key, during_time):
+        self.__finishKey(str_key, during_time)
 
-    def customTimeKey(self, hex_key_code, during_time):
-        self.__finishKey(hex_key_code, during_time)
+    def customTimeKey(self, str_key, during_time):
+        self.__finishKey(str_key, during_time)
 
-    def doubleKey(self, hex_key_code):
-        self.shortKey(hex_key_code)
+    def doubleKey(self, str_key):
+        self.shortKey(str_key)
         time.sleep(self.__short_during_time)
-        self.shortKey(hex_key_code)
+        self.shortKey(str_key)
 
 
 class ActionMouse:
@@ -172,7 +173,7 @@ class ActionMouse:
 
         self.time_click_interval = time_click_interval
 
-        self.key = {'left': 'l', 'middle': 'm', 'right': 'r'}
+        self.__map_mouse = {'left': 'l', 'middle': 'm', 'right': 'r'}
 
     def getScreenSize(self):
         # 获取当前屏幕分辨率。
@@ -259,14 +260,14 @@ class ActionMouse:
         si = StructInput(ctypes.c_ulong(0), ii)
         ctypes.windll.user32.SendInput(1, ctypes.pointer(si), ctypes.sizeof(si))
 
-    def __mapKey(self, hex_key_code):
-        if hex_key_code == self.key['left']:
+    def __mapKey(self, str_key):
+        if str_key == self.__map_mouse['left']:
             dwflags_down = self.__MOUSEEVENTF_LEFTDOWN
             dwflags_up = self.__MOUSEEVENTF_LEFTUP
-        elif hex_key_code == self.key['middle']:
+        elif str_key == self.__map_mouse['middle']:
             dwflags_down = self.__MOUSEEVENTF_MIDDLEDOWN
             dwflags_up = self.__MOUSEEVENTF_MIDDLEUP
-        elif hex_key_code == self.key['right']:
+        elif str_key == self.__map_mouse['right']:
             dwflags_down = self.__MOUSEEVENTF_RIGHTDOWN
             dwflags_up = self.__MOUSEEVENTF_RIGHTUP
         else:
@@ -274,26 +275,26 @@ class ActionMouse:
 
         return (dwflags_down, dwflags_up)
 
-    def __finishMouse(self, hex_key_code, during_time):
-        dwflags_down, dwflags_up = self.__mapKey(hex_key_code)
+    def __finishMouse(self, str_key, during_time):
+        dwflags_down, dwflags_up = self.__mapKey(str_key)
 
         self.__operateMouse(dwflags_down)
         time.sleep(during_time)
         self.__operateMouse(dwflags_up)
 
-    def click(self, hex_key_code):
-        self.__finishMouse(hex_key_code, 0.05)
+    def click(self, str_key):
+        self.__finishMouse(str_key, 0.05)
 
-    def duringClick(self, hex_key_code, during_time):
-        self.__finishMouse(hex_key_code, during_time)
+    def duringClick(self, str_key, during_time):
+        self.__finishMouse(str_key, during_time)
 
-    def doubleClick(self, hex_key_code):
-        self.click(hex_key_code)
+    def doubleClick(self, str_key):
+        self.click(str_key)
         time.sleep(self.time_click_interval)
-        self.click(hex_key_code)
+        self.click(str_key)
 
-    def drag(self, hex_key_code, sx, sy, ex, ey):
-        dwflags_down, dwflags_up = self.__mapKey(hex_key_code)
+    def drag(self, str_key, sx, sy, ex, ey):
+        dwflags_down, dwflags_up = self.__mapKey(str_key)
         self.__move(sx, sy)
         self.__operateMouse(dwflags_down)
         self.__move(ex, ey)
@@ -655,8 +656,8 @@ if __name__ == "__main__":
     action = Action()
     while True:
         time.sleep(0.3)
-        action.keyboard.duringKey(action.keyboard.key['E'], 0.5)
-        # action.mouse.duringClick(action.mouse.key['left'], 0.5)
+        # action.keyboard.duringKey('E', 0.5)
+        action.mouse.duringClick('r', 0.5)
 
     # eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
