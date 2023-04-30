@@ -1,6 +1,6 @@
 from dependencies import *
 
-class Display(object):
+class StatusWindow(object):
     """
     此类展示项目运行时的各种状态。
     This class shows the various states of the project when it is running.
@@ -27,7 +27,7 @@ class Display(object):
 
 
 if __name__ == '__main__':
-    d = Display()
+    d = StatusWindow()
     T = threading.Thread(target=d.tk_show, args=())
     T.start()
     # d.tk_show()

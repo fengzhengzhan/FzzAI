@@ -6,9 +6,6 @@ class ResetEnv:
     Reset the environment status, make the program continuous.
     """
 
-    def __init__(self):
-        pass
-
     def travelProcess(self):
         name_process = []
 

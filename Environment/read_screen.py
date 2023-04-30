@@ -54,6 +54,9 @@ class ReadScreen:
         return img
         # return cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
 
+    def converScreen(self):
+        return self.gainScreen()
+
 
 if __name__ == '__main__':
     main_window = (0, 0, 800, 500)
