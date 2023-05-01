@@ -1,9 +1,9 @@
 from dependencies import *
 
 
-class ResetEnv:
+class ChangeEnv:
     """
-    Reset the environment status, make the program continuous.
+    Change the environment status, make the program continuous.
     """
 
     def travelProcess(self):
@@ -34,6 +34,6 @@ class ResetEnv:
 
 
 if __name__ == '__main__':
-    reset = ResetEnv()
+    reset = ChangeEnv()
     print(reset.travelProcess())
     reset.toppingProcess('Steam')

@@ -1,5 +1,3 @@
-import time
-
 from dependencies import *
 
 
@@ -162,18 +160,26 @@ class ActionMouse:
 
     def __init__(self, time_click_interval=0.01):
         self.__MOUSEEVENTF_MOVE = 0x0001
+
         self.__MOUSEEVENTF_LEFTDOWN = 0x0002
         self.__MOUSEEVENTF_LEFTUP = 0x0004
-        self.__MOUSEEVENTF_MIDDLEDOWN = 0x0020
-        self.__MOUSEEVENTF_MIDDLEUP = 0x0040
+
         self.__MOUSEEVENTF_RIGHTDOWN = 0x0008
         self.__MOUSEEVENTF_RIGHTUP = 0x0010
+
+        self.__MOUSEEVENTF_MIDDLEDOWN = 0x0020
+        self.__MOUSEEVENTF_MIDDLEUP = 0x0040
+
         self.__MOUSEEVENTF_WHEEL = 0x0800
+        self.__MOUSEEVENTF_HWHEEL = 0x1000
+
         self.__MOUSEEVENTF_ABSOLUTE = 0x8000
+
+        self.__WHEEL_DELTA = 120
 
         self.time_click_interval = time_click_interval
 
-        self.__map_mouse = {'left': 'l', 'middle': 'm', 'right': 'r'}
+        self.__map_mouse = {'left': 'l', 'middle': 'm', 'right': 'r', 'unknown': 'u'}
 
     def getScreenSize(self):
         # 获取当前屏幕分辨率。
@@ -234,6 +240,7 @@ class ActionMouse:
         for i in range(0, steps):
             x_current = x_pos + x_dis * list_xsteps[i]
             y_current = y_pos + y_dis * list_ysteps[i]
+            # StructMouseInput结构体的MOUSEEVENTF_MOVE产生鼠标事件，但映射标准化绝对坐标，无法精确设置位置
             ctypes.windll.user32.SetCursorPos(int(x_current), int(y_current))  # 不产生一个鼠标事件
             x_pos, y_pos = x_current, y_current
             time.sleep(list_interval[i])
@@ -254,8 +261,10 @@ class ActionMouse:
 
         self.__move(tx, ty)
 
-    def __operateMouse(self, dw_flags):
-        mi = StructMouseInput(0, 0, 0, dw_flags, 0, ctypes.pointer(ctypes.c_ulong(0)))
+    def __operateMouse(self, mouse_data, dw_flags):
+        # StructMouseInput不移动，不使用dx, dy参数。
+        # 滚动时使用mouseData和dwFlags参数
+        mi = StructMouseInput(0, 0, mouse_data, dw_flags, 0, ctypes.pointer(ctypes.c_ulong(0)))
         ii = UnionKeyInput(mi=mi)
         si = StructInput(ctypes.c_ulong(0), ii)
         ctypes.windll.user32.SendInput(1, ctypes.pointer(si), ctypes.sizeof(si))
@@ -278,9 +287,9 @@ class ActionMouse:
     def __finishMouse(self, str_key, during_time):
         dwflags_down, dwflags_up = self.__mapKey(str_key)
 
-        self.__operateMouse(dwflags_down)
+        self.__operateMouse(0, dwflags_down)
         time.sleep(during_time)
-        self.__operateMouse(dwflags_up)
+        self.__operateMouse(0, dwflags_up)
 
     def click(self, str_key):
         self.__finishMouse(str_key, 0.05)
@@ -293,341 +302,36 @@ class ActionMouse:
         time.sleep(self.time_click_interval)
         self.click(str_key)
 
+    def scrollVertical(self, number):
+        """
+        模拟鼠标滚轮滚动。
+        参数：
+            number: 整数，正值表示向上滚动，负值表示向下滚动。
+        """
+        self.__operateMouse(int(number * self.__WHEEL_DELTA), self.__MOUSEEVENTF_WHEEL)
+
+    def scrollHorizontal(self, number):
+        """
+        模拟鼠标滚轮滚动。
+        参数：
+            number: 整数，正值表示向右滚动，负值表示向左滚动。
+        """
+        self.__operateMouse(int(number * self.__WHEEL_DELTA), self.__MOUSEEVENTF_HWHEEL)
+
     def drag(self, str_key, sx, sy, ex, ey):
         dwflags_down, dwflags_up = self.__mapKey(str_key)
         self.__move(sx, sy)
-        self.__operateMouse(dwflags_down)
+        self.__operateMouse(0, dwflags_down)
         self.__move(ex, ey)
-        self.__operateMouse(dwflags_up)
-
-
-# Actuals Functions
-
-
-# use keyboard
-# I = 0x17
-# J = 0x24
-# K = 0x25
-# L = 0x26
-#
-# SPACE = 0x39
-#
-# Q = 0x10
-# W = 0x11
-# E = 0x12
-# R = 0x13
-#
-# ENTER = 0x1C
-# T = 0x14
-# ESC = 0x01
-#
-#
-# # 移动
-# def i_up():
-#     PressKey(I)
-#     time.sleep(0.15)
-#     ReleaseKey(I)
-#     # time.sleep(0.2)
-#
-#
-# def j_left():
-#     PressKey(J)
-#     time.sleep(0.1)
-#     ReleaseKey(J)
-#     PressKey(R)
-#     time.sleep(0.05)
-#     ReleaseKey(R)
-#     # time.sleep(0.2)
-#
-#
-# # def j_left():
-# #     PressKey(J)
-# #     time.sleep(0.1)
-# #     ReleaseKey(J)
-# #     # PressKey(R)
-# #     # time.sleep(0.05)
-# #     # ReleaseKey(R)
-# #     # time.sleep(0.2)
-#
-# def k_down():
-#     PressKey(K)
-#     time.sleep(0.15)
-#     ReleaseKey(K)
-#     # time.sleep(0.2)
-#
-#
-# def l_right():
-#     PressKey(L)
-#     time.sleep(0.1)
-#     ReleaseKey(L)
-#     PressKey(R)
-#     time.sleep(0.05)
-#     ReleaseKey(R)
-#     # time.sleep(0.2)
-#
-#
-# # def l_right():
-# #     PressKey(L)
-# #     time.sleep(0.1)
-# #     ReleaseKey(L)
-# #     # PressKey(R)
-# #     # time.sleep(0.05)
-# #     # ReleaseKey(R)
-# #     # time.sleep(0.2)
-#
-# def i_attack():
-#     PressKey(I)
-#     # time.sleep(0.05)
-#     PressKey(R)
-#     time.sleep(0.05)
-#     ReleaseKey(I)
-#     ReleaseKey(R)
-#
-#
-# def k_attack():
-#     PressKey(K)
-#     # time.sleep(0.05)
-#     PressKey(R)
-#     time.sleep(0.05)
-#     ReleaseKey(K)
-#     ReleaseKey(R)
-#
-#
-# # 跳跃
-# def space_long_up():
-#     PressKey(SPACE)
-#     time.sleep(0.5)
-#     ReleaseKey(SPACE)
-#     # time.sleep(0.2)
-#
-#
-# def space_short_up():
-#     PressKey(SPACE)
-#     time.sleep(0.15)
-#     ReleaseKey(SPACE)
-#     # time.sleep(0.2)
-#
-#
-# # 技能
-# def q_short_use():
-#     # TODO test
-#     PressKey(Q)
-#     time.sleep(0.05)
-#     ReleaseKey(Q)
-#     # time.sleep(0.2)
-#
-#
-# def q_long_use():
-#     PressKey(Q)
-#     time.sleep(1.4)
-#     ReleaseKey(Q)
-#     # time.sleep(0.2)
-#
-#
-# # 攻击
-# def r_short_attack():
-#     PressKey(R)
-#     time.sleep(0.05)
-#     ReleaseKey(R)
-#     # time.sleep(0.2)
-#
-#
-# # def r_long_attack():
-# #     PressKey(R)
-# #     time.sleep(1.6)
-# #     ReleaseKey(R)
-# #     # time.sleep(0.2)
-#
-# # 运动
-# def w_long_run():
-#     # TODO test
-#     PressKey(W)
-#     time.sleep(0.5)
-#     ReleaseKey(W)
-#     # time.sleep(0.2)
-#
-#
-# def e_run():
-#     PressKey(E)
-#     time.sleep(0.05)
-#     ReleaseKey(E)
-#     # time.sleep(0.2)
-#
-#
-# # 技能
-# def iq_boom():
-#     PressKey(I)
-#     PressKey(Q)
-#     # time.sleep(0.05)
-#     ReleaseKey(Q)
-#     ReleaseKey(I)
-#
-#
-# def jq_boom():
-#     PressKey(J)
-#     time.sleep(0.02)
-#     PressKey(Q)
-#     # time.sleep(0.05)
-#     ReleaseKey(Q)
-#     ReleaseKey(J)
-#
-#
-# def kq_doom():
-#     PressKey(K)
-#     PressKey(Q)
-#     ReleaseKey(Q)
-#     ReleaseKey(K)
-#
-#
-# def lq_boom():
-#     PressKey(L)
-#     time.sleep(0.02)
-#     PressKey(Q)
-#     # time.sleep(0.05)
-#     ReleaseKey(Q)
-#     ReleaseKey(L)
-#
-#
-# def t_pause():
-#     PressKey(T)
-#     time.sleep(0.05)
-#     ReleaseKey(T)
-#     # time.sleep(0.2)
-#
-#
-# def esc_quit():
-#     PressKey(ESC)
-#     time.sleep(0.05)
-#     ReleaseKey(ESC)
-#     # time.sleep(0.2)
-#
-#
-# # 竞技场
-# # def init_start():
-# #     print("[-] Knight dead,restart...")
-# #     # 椅子到通道
-# #     time.sleep(3)
-# #     PressKey(J)
-# #     time.sleep(0.05)
-# #     ReleaseKey(J)
-# #     time.sleep(2.5)
-# #     PressKey(W)
-# #     time.sleep(1.3)
-# #     ReleaseKey(W)
-# #     time.sleep(1.9)
-# #     PressKey(W)
-# #     time.sleep(0.05)
-# #     ReleaseKey(W)
-# #     time.sleep(2)
-# #
-# #     # 通道
-# #     PressKey(SPACE)
-# #     time.sleep(0.5)
-# #     ReleaseKey(SPACE)
-# #     time.sleep(0.05)
-# #
-# #     PressKey(SPACE)
-# #     PressKey(J)
-# #     time.sleep(0.5)
-# #     ReleaseKey(SPACE)
-# #
-# #     time.sleep(0.05)
-# #     PressKey(SPACE)
-# #     time.sleep(0.05)
-# #     ReleaseKey(SPACE)
-# #     time.sleep(0.05)
-# #
-# #     PressKey(SPACE)
-# #     time.sleep(0.05)
-# #     ReleaseKey(SPACE)
-# #     time.sleep(0.05)
-# #
-# #     # PressKey(SPACE)
-# #     # time.sleep(0.05)
-# #     # ReleaseKey(SPACE)
-# #     PressKey(SPACE)
-# #     time.sleep(0.5)
-# #     ReleaseKey(SPACE)
-# #     ReleaseKey(J)
-# #
-# #     # 左拿徽章
-# #     time.sleep(4.5)
-# #     PressKey(J)
-# #     time.sleep(0.4)
-# #     ReleaseKey(J)
-# #
-# #     # 通行证
-# #     PressKey(I)
-# #     time.sleep(0.05)
-# #     ReleaseKey(I)
-# #     time.sleep(1.5)
-# #     PressKey(J)
-# #     time.sleep(0.05)
-# #     ReleaseKey(J)
-# #     time.sleep(0.05)
-# #     PressKey(ENTER)
-# #     time.sleep(0.05)
-# #     ReleaseKey(ENTER)
-# #
-# #     # 右进角斗场
-# #     time.sleep(2.5)
-# #     PressKey(L)
-# #     time.sleep(0.05)
-# #     ReleaseKey(L)
-# #     time.sleep(0.05)
-# #     PressKey(W)
-# #     time.sleep(1.3)
-# #     ReleaseKey(W)
-# #     time.sleep(7.5)
-# #     PressKey(W)
-# #     time.sleep(0.05)
-# #     ReleaseKey(W)
-# #     print("[+] Enter start...")
-#
-# # 神居
-# def init_init():
-#     time.sleep(3)
-#     PressKey(I)
-#     time.sleep(0.05)
-#     ReleaseKey(I)
-#     time.sleep(1)
-#     PressKey(SPACE)
-#     time.sleep(0.05)
-#     ReleaseKey(SPACE)
-#     time.sleep(6)
-#     print("[+] Enter start...")
-#
-#
-# # 神居
-# def init_start():
-#     print("[-] Knight dead,restart...")
-#     # 起身
-#     PressKey(SPACE)
-#     time.sleep(0.05)
-#     ReleaseKey(SPACE)
-#     time.sleep(2)
-#
-#     PressKey(SPACE)
-#     time.sleep(0.05)
-#     ReleaseKey(SPACE)
-#     time.sleep(2)
-#
-#     # 选择
-#     PressKey(I)
-#     time.sleep(0.05)
-#     ReleaseKey(I)
-#     time.sleep(1)
-#     PressKey(SPACE)
-#     time.sleep(0.05)
-#     ReleaseKey(SPACE)
-#     time.sleep(6)
-#     print("[+] Enter start...")
+        self.__operateMouse(0, dwflags_up)
 
 
 class Action:
     def __init__(self, keyboard=False, mouse=False, xbox=False, video=False, audio=False):
-        self.keyboard = ActionKeyboard()
-        self.mouse = ActionMouse()
+        if keyboard:
+            self.keyboard = ActionKeyboard()
+        if mouse:
+            self.mouse = ActionMouse()
 
 
 if __name__ == "__main__":
@@ -653,31 +357,14 @@ if __name__ == "__main__":
     #     action.keyboard.shortKey(v)
     #
 
-    action = Action()
+    action = Action(keyboard=True, mouse=True)
     while True:
-        time.sleep(0.3)
+        # time.sleep(0.3)
+        time.sleep(1)
         # action.keyboard.duringKey('E', 0.5)
-        action.mouse.duringClick('r', 0.5)
+        # action.mouse.duringClick('r', 0.5)
+        # action.mouse.scrollVertical(1)
+        action.mouse.scrollHorizontal(1)
+        print(action.mouse.getPosition())
 
     # eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-
-    # while True:  # 16种操作全部测试
-    # i_up()
-    # j_left()
-    # time.sleep(1)
-    # k_down()
-    # l_right()
-    # space_long_up()
-    # space_short_up()
-    # q_short_use()
-    # q_long_use()
-    # r_short_attack()
-    # r_long_attack()
-    # w_long_run()
-    # e_run()
-    # iq_boom()
-    # kq_doom()
-    # jq_boom()
-    # lq_boom()
-    # time.sleep(1)
-    # init_start()

@@ -17,6 +17,8 @@ import ctypes.wintypes
 
 import cv2
 
+from pynput import keyboard
+
 # Custom dependencies
 from Tool.param_menu import ParamMenu
 from Environment.read_screen import ReadScreen
