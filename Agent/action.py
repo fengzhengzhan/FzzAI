@@ -361,10 +361,10 @@ if __name__ == "__main__":
     while True:
         # time.sleep(0.3)
         time.sleep(1)
-        # action.keyboard.duringKey('E', 0.5)
+        action.keyboard.duringKey('E', 0.5)
         # action.mouse.duringClick('r', 0.5)
         # action.mouse.scrollVertical(1)
-        action.mouse.scrollHorizontal(1)
-        print(action.mouse.getPosition())
+        # action.mouse.scrollHorizontal(1)
+        # print(action.mouse.getPosition())
 
-    # eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    # eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
