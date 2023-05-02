@@ -1,7 +1,8 @@
 from dependencies import *
 
 class ListenerKeyboard:
-    pass
+    def onPress(self, key):
+        pass
 
 
 class ListenerMouse:
@@ -44,9 +45,19 @@ class GlobalKeyboardListener:
 
 
 if __name__ == "__main__":
+    # time.sleep(3)
     gkl = GlobalKeyboardListener()
-    gkl_thread = threading.Thread(target=gkl.start_listener)
-    gkl_thread.start()
-    time.sleep(1)  # 主进程阻塞1秒
-    gkl.listener.stop()
-    gkl_thread.join()
+    gkl.start_listener()
+    # gkl_thread = threading.Thread(target=gkl.start_listener)
+    # gkl_thread.start()
+    # time.sleep(10)  # 主进程阻塞1秒
+    # gkl.listener.stop()
+    # gkl_thread.join()
+
+    while True:
+        time.sleep(1)
+        print(10)
+
+
+
+#
