@@ -17,7 +17,7 @@ import ctypes.wintypes
 
 import cv2
 
-from pynput import keyboard
+from pynput import keyboard, mouse
 import abc
 
 # Custom dependencies

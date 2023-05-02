@@ -1,63 +1,74 @@
 from dependencies import *
 
-class ListenerKeyboard:
+
+class ProcessListenerKeyboard(Process):
+    def __init__(self, channel_index, channel_data, channel_length):
+        super(ProcessListenerKeyboard, self).__init__()
+        self.channel_index = channel_index
+        self.channel_data = channel_data
+        self.channel_length = channel_length
+
+    def gainKey(self, key):
+        # 滚动Manager数组
+        self.channel_data[(self.channel_index.value + 1) % self.channel_length] = key
+        self.channel_index.value += 1
+
     def onPress(self, key):
-        pass
+        self.gainKey(key)
+
+    def onRelease(self, key):
+        self.gainKey(key)
+
+    def run(self):
+        with keyboard.Listener(on_press=self.onPress, on_release=self.onRelease) as listener:
+            listener.join()
 
 
-class ListenerMouse:
-    pass
+class ProcessListenerMouese(Process):
+    def __init__(self, channel_index, channel_data, channel_length):
+        super(ProcessListenerMouese, self).__init__()
+        self.channel_index = channel_index
+        self.channel_data = channel_data
+        self.channel_length = channel_length
 
+    def gainKey(self, key):
+        # 滚动Manager数组
+        self.channel_data[(self.channel_index.value + 1) % self.channel_length] = key
+        self.channel_index.value += 1
 
-class ProcessListenerKeyboard:
-    pass
+    def onMove(self, x, y):
+        self.gainKey(("move", x, y, x, y))
 
+    def onClick(self, x, y, button, pressed):
+        self.gainKey(("click", x, y, button, pressed))
 
-class ProcessListenerMouese:
-    pass
+    def onScroll(self, x, y, dx, dy):
+        self.gainKey(("scroll", x, y, dx, dy))
+
+    def run(self):
+        with mouse.Listener(on_move=self.onMove, on_click=self.onClick, on_scroll=self.onScroll) as listener:
+            listener.join()
 
 
 import time
 from pynput import keyboard
 
-
-class GlobalKeyboardListener:
-    def __init__(self):
-        self.listener = None
-
-    def on_press(self, key):
-        try:
-            print(f"Key {key.char} pressed")
-        except AttributeError:
-            print(f"Special key {key} pressed")
-
-    def on_release(self, key):
-        print(f"Key {key} released")
-        if key == keyboard.Key.esc:
-            return False
-
-    def start_listener(self):
-        with keyboard.Listener(
-                on_press=self.on_press,
-                on_release=self.on_release) as listener:
-            self.listener = listener
-            listener.join()
-
-
 if __name__ == "__main__":
     # time.sleep(3)
-    gkl = GlobalKeyboardListener()
-    gkl.start_listener()
-    # gkl_thread = threading.Thread(target=gkl.start_listener)
-    # gkl_thread.start()
-    # time.sleep(10)  # 主进程阻塞1秒
-    # gkl.listener.stop()
-    # gkl_thread.join()
+    # transport_manager = TransportManager(ProcessListenerKeyboard)
+    #
+    # # 并行性验证
+    # for i in range(100000):
+    #     time.sleep(1)
+    #     print(i)
+    #     print(transport_manager.channel_index.value)
+    #     print(transport_manager.channel_data)
 
-    while True:
+    transport_manager = TransportManager(ProcessListenerMouese)
+    # 并行性验证
+    for i in range(100000):
         time.sleep(1)
-        print(10)
+        print(i)
+        print(transport_manager.channel_index.value)
+        print(transport_manager.channel_data)
 
-
-
-#
