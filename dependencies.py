@@ -1,24 +1,21 @@
 # System dependencies
+import abc
+
 import time
 from datetime import datetime
+
+import win32gui, win32ui, win32con, win32api, win32process, win32com.client
+from pynput import keyboard, mouse
+
 import random
 import numpy as np
-
-import ctypes
-import win32gui, win32ui, win32con, win32api, win32process, win32com.client
-
-import threading
-from multiprocessing import Process, Manager, Queue
-
+import cv2
 from tkinter import *
+
+from multiprocessing import Process, Manager, Queue
 
 import ctypes
 import ctypes.wintypes
-
-import cv2
-
-from pynput import keyboard, mouse
-import abc
 
 # Custom dependencies
 from Tool.param_menu import ParamMenu

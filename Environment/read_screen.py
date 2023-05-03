@@ -59,8 +59,13 @@ class ProcessReadScreen(Process):
     Use Manager communicate information.
     """
 
-    def __init__(self, channel_index, channel_data, channel_length):
+    def __init__(self):
         super(ProcessReadScreen, self).__init__()
+        self.channel_length = None
+        self.channel_data = None
+        self.channel_index = None
+
+    def setChannel(self, channel_index, channel_data, channel_length):
         self.channel_index = channel_index
         self.channel_data = channel_data
         self.channel_length = channel_length
@@ -95,7 +100,7 @@ if __name__ == '__main__':
     # cv2.destroyAllWindows()
 
     # 测试manager
-    transport_manager = TransportManager(ProcessReadScreen)
+    transport_manager = TransportManager(ProcessReadScreen())
     time.sleep(3)
 
     # 并行性验证

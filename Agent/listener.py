@@ -2,8 +2,19 @@ from dependencies import *
 
 
 class ProcessListenerKeyboard(Process):
-    def __init__(self, channel_index, channel_data, channel_length):
+    def __init__(self):
         super(ProcessListenerKeyboard, self).__init__()
+        self.channel_length = None
+        self.channel_data = None
+        self.channel_index = None
+
+        self.map_keycode = {
+            'ctrl_l': keyboard.Key.ctrl_l, 'ctrl_r': keyboard.Key.ctrl_r,
+            'p': keyboard.KeyCode.from_char('p'), 's': keyboard.KeyCode.from_char('p'),
+            'ctrl_l+p': keyboard.KeyCode.from_char('\x10'), 'ctrl_l+s': keyboard.KeyCode.from_char('\x13'),
+        }
+
+    def setChannel(self, channel_index, channel_data, channel_length):
         self.channel_index = channel_index
         self.channel_data = channel_data
         self.channel_length = channel_length
@@ -55,20 +66,25 @@ from pynput import keyboard
 
 if __name__ == "__main__":
     # time.sleep(3)
-    # transport_manager = TransportManager(ProcessListenerKeyboard)
-    #
-    # # 并行性验证
-    # for i in range(100000):
-    #     time.sleep(1)
-    #     print(i)
-    #     print(transport_manager.channel_index.value)
-    #     print(transport_manager.channel_data)
+    plk = ProcessListenerKeyboard()
+    transport_manager = TransportManager(plk)
+    map_keycode = plk.map_keycode
 
-    transport_manager = TransportManager(ProcessListenerMouese)
     # 并行性验证
     for i in range(100000):
         time.sleep(1)
         print(i)
         print(transport_manager.channel_index.value)
         print(transport_manager.channel_data)
+        if map_keycode['ctrl_l+p'] in transport_manager.channel_data:
+            print("pause")
+            if map_keycode['ctrl_l+s'] in transport_manager.channel_data:
+                print('start')
 
+    # transport_manager = TransportManager(ProcessListenerMouese)
+    # # 并行性验证
+    # for i in range(100000):
+    #     time.sleep(1)
+    #     print(i)
+    #     print(transport_manager.channel_index.value)
+    #     print(transport_manager.channel_data)
