@@ -58,17 +58,11 @@ class ProcessReadScreen(Process):
     在多进程中使用manager传递信息
     Use Manager communicate information.
     """
-
     def __init__(self):
         super(ProcessReadScreen, self).__init__()
-        self.channel_length = None
-        self.channel_data = None
-        self.channel_index = None
 
-    def setChannel(self, channel_index, channel_data, channel_length):
-        self.channel_index = channel_index
-        self.channel_data = channel_data
-        self.channel_length = channel_length
+    def setManager(self, transport_manager):
+        self.transport_manager = transport_manager
 
     def converScreen(self, img):
         # 装饰类，转换屏幕截图图像
@@ -79,9 +73,8 @@ class ProcessReadScreen(Process):
         while True:
             # 多进程获取屏幕截图
             data = self.converScreen(gs.gainScreen())
-            # 滚动Manager数组
-            self.channel_data[(self.channel_index.value + 1) % self.channel_length] = data
-            self.channel_index.value += 1
+            self.transport_manager.sendTransData(data)
+
 
 
 if __name__ == '__main__':
@@ -100,7 +93,7 @@ if __name__ == '__main__':
     # cv2.destroyAllWindows()
 
     # 测试manager
-    transport_manager = TransportManager(ProcessReadScreen())
+    transport_manager = ProcessTransportManager(ProcessReadScreen()).transport_manager
     time.sleep(3)
 
     # 并行性验证
