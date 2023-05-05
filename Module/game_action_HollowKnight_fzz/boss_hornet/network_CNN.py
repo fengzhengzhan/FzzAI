@@ -1,12 +1,4 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torchvision.transforms as T
-
-
-import random
-import numpy as np
+from dependencies import *
 
 from argconfig import *
 

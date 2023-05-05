@@ -1,5 +1,10 @@
+from dependencies import *
 
 # Actuals Functions
+class KeyBingdings:
+    def __init__(self):
+        pass
+
 
 
 # use keyboard
