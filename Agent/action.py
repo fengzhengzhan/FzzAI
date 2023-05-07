@@ -129,10 +129,16 @@ class ActionKeyboard:
         si = StructInput(ctypes.c_ulong(1), uki)
         ctypes.windll.user32.SendInput(1, ctypes.pointer(si), ctypes.sizeof(si))
 
-    def __finishKey(self, str_key, during_time):
+    def pressKey(self, str_key):
         self.__operateKey(str_key, self.__DWFLAGS_PRESSKEY)
-        time.sleep(during_time)
+
+    def releaseKey(self, str_key):
         self.__operateKey(str_key, self.__DWFLAGS_RELEASEKEY)
+
+    def __finishKey(self, str_key, during_time):
+        self.pressKey(str_key)
+        time.sleep(during_time)
+        self.releaseKey(str_key)
 
     def shortKey(self, str_key):
         self.__finishKey(str_key, self.__short_during_time)
@@ -141,9 +147,6 @@ class ActionKeyboard:
         self.__finishKey(str_key, self.__long_during_time)
 
     def duringKey(self, str_key, during_time):
-        self.__finishKey(str_key, during_time)
-
-    def customTimeKey(self, str_key, during_time):
         self.__finishKey(str_key, during_time)
 
     def doubleKey(self, str_key):
