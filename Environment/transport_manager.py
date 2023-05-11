@@ -24,6 +24,7 @@ class TransportManager:
 
 class ProcessTransportManager:
     def __init__(self, process_channel):
+        # Manager从主进程传入，用于进程间数据通讯
         self.__manager = Manager()
         self.transport_manager = TransportManager(self.__manager)
         self.process = process_channel

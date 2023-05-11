@@ -5,7 +5,7 @@ class ParamMenu:
     def selectAgent(self):
         pass
 
-    def print_logo(self):
+    def printLogo(self):
         print("""
          #############################################################################
     

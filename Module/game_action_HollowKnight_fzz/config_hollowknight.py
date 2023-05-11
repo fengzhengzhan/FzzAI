@@ -1,14 +1,19 @@
-import torch
-from collections import deque
-import time
+GAME_NAME = "HollowKnight"
 
-# DQN arguments
+# Save Path
+PATH_DATASET = "{}{}".format(GAME_NAME, "Data")
+
+# Network arguments
 GAMMA = 0.9
 LEARN_RATE = 0.001
 
+# Train arguments
+EPOCH = 30000
+
+
 
 # 如果使用gpu
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 ACTION_SIZE = 10
 
@@ -24,7 +29,6 @@ DQN_MODEL_PATH = "E:\\1_mycode\\Knight_DQN\\model\\dqn_model.pt"
 DQN_STORE_PATH = "E:\\1_mycode\\Knight_DQN\\model\\dqn_store"
 DQN_LOG_PATH = "model\\dqn_log.log"
 
-EPISODES = 30000
 REPLAY_SIZE = 4000
 STORE_SIZE = 1200  # 所需要存储的次数 1500
 BATCH_SIZE = 8  # 采样个数
@@ -36,16 +40,13 @@ NUM_STEP = 0
 TARGET_STEP = 0
 
 paused = True
-init_time = time.time()
+# init_time = time.time()
 
 num_step = 0
 target_step = 0
-
 
 I_ATTACK = 0
 J_LEFT = 1
 K_ATTACK = 2
 L_RIGHT = 3
 ATTACK_NUM = 4
-
-
