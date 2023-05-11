@@ -9,11 +9,11 @@ class StatusWindow(object):
         pass
 
     def tk_show(self):
-        win = Tk(className='状态 Status')
+        win = tkinter.Tk(className='状态 Status')
         win.attributes("-alpha", 0.5)  # 调节透明度
         # root.overrideredirect(True)  # 去除标题栏
         win.attributes('-topmost', True)
-        win.geometry('300x200+20+40')  # 调节大小
+        win.geometry('300x200+1600+0')  # 调节大小
         win.mainloop()  # 显示窗口
 
     def cmd_show(self):

@@ -1,9 +1,9 @@
 from dependencies import *
 
 
-class DQN(nn.Module):
+class NetworkCNN(nn.Module):
     def __init__(self, width, height, action):
-        super(DQN, self).__init__()
+        super(NetworkCNN, self).__init__()
         self.resize_dim = width * height
         self.resize_width = width
         self.resize_height = height
@@ -47,10 +47,19 @@ class DQN(nn.Module):
         self.opt = torch.optim.Adam(self.parameters(), lr=confhk.LEARN_RATE)
 
     def forward(self, x):
-        x = torch.as_tensor(x, dtype=torch.float32).to(DEVICE).requires_grad_(True)
+        x = torch.as_tensor(x, dtype=torch.float32).to(confhk.DEVICE).requires_grad_(True)
         x = self.conv(x)
         x = x.reshape(self.linear_input_size)
         x = self.linear(x)
 
         return x
+
+    def save_model(self, path):
+        """保存模型到指定路径"""
+        torch.save(self.state_dict(), path)
+
+    def load_model(self, path):
+        """从指定路径加载模型"""
+        self.load_state_dict(torch.load(path))
+        #  self.load_state_dict(torch.load(path, map_location=torch.device('cpu')))
 

@@ -1,3 +1,5 @@
+from dependencies import *
+
 GAME_NAME = "HollowKnight"
 
 # Save Path
@@ -10,10 +12,8 @@ LEARN_RATE = 0.001
 # Train arguments
 EPOCH = 30000
 
-
-
 # 如果使用gpu
-# DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 ACTION_SIZE = 10
 

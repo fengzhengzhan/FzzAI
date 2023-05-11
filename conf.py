@@ -1,3 +1,9 @@
+# Path of Project
+ROOTDIR = "FzzAI"
+DATASET_AUTOSAVE_PATH = "dataset_autosave"
+
+GLOBAL_LOG_PATH = "global.log"
+
 
 # agent_sense
 
