@@ -1,17 +1,30 @@
 from dependencies import *
 
-class StatusWindow(object):
+
+class GlobalStatus:
+    def __init__(self):
+        self.start_time = time.time()
+        self.last_time = time.time()
+
+        self.goon = True  # 是否停止
+        self.total_reward = 0  # 总的奖赏
+        self.avg_step = 0  # 平均操作数
+        self.total_step = 0  # 每一局总操作数
+
+
+class StatusWindow:
     """
     此类展示项目运行时的各种状态。
     This class shows the various states of the project when it is running.
     """
+
     def __init__(self):
         pass
 
     def tk_show(self):
         win = tkinter.Tk(className='状态 Status')
-        win.attributes("-alpha", 0.5)  # 调节透明度
-        # root.overrideredirect(True)  # 去除标题栏
+        # win.attributes("-alpha", 0.5)  # 调节透明度
+        win.overrideredirect(True)  # 去除标题栏
         win.attributes('-topmost', True)
         win.geometry('300x200+1600+0')  # 调节大小
         win.mainloop()  # 显示窗口
@@ -21,9 +34,6 @@ class StatusWindow(object):
 
     def print_show(self):
         pass
-
-
-
 
 
 if __name__ == '__main__':

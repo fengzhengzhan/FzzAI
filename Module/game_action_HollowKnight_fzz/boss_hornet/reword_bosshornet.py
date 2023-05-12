@@ -1,5 +1,7 @@
 from dependencies import *
 
+class Reward:
+    pass
 
 
 

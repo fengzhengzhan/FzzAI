@@ -21,6 +21,12 @@ class TransportManager:
             data.append(self.channel_data[(index - count) % self.channel_length])
         return data
 
+    def clearTransData(self):
+        """Manager内容清空，设置为0初始值"""
+        for i in range(self.channel_length):
+            self.channel_data[i] = 0
+        self.channel_index.value = 0
+
 
 class ProcessTransportManager:
     def __init__(self, process_channel):

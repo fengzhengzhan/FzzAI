@@ -9,10 +9,10 @@ class AlgorithmDQN:
     def __init__(self, NetworkClass, model_path=confhk.DQN_MODEL_PATH):
         self.policy_network = NetworkClass(confhk.WIDTH, confhk.HEIGHT, confhk.ACTION_SIZE).to(confhk.DEVICE)
         if os.path.exists(model_path):
-            self.policy_network.load_state_dict(torch.load(model_path))
-            print("[*] policy_net load finish!")
+            self.policy_network.load_model(model_path)
+            Logger.log(INFO, "policy_net load finish!")
         self.target_network = NetworkClass(confhk.WIDTH, confhk.HEIGHT, confhk.ACTION_SIZE).to(confhk.DEVICE)
-        self.target_network.load_state_dict(self.policy_network.state_dict())
+        self.target_network.load_model_othernet(self.policy_network)
         self.target_network.eval()
 
     def core(self):
@@ -23,13 +23,7 @@ class AlgorithmDQN:
 
         judge = JUDGE()
 
-        policy_net = DQN(WIDTH, HEIGHT, ACTION_SIZE).to(DEVICE)
-        if os.path.exists(DQN_MODEL_PATH):
-            policy_net.load_state_dict(torch.load(DQN_MODEL_PATH))
-            print("[*] policy_net load finish!")
-        target_net = DQN(WIDTH, HEIGHT, ACTION_SIZE).to(DEVICE)
-        target_net.load_state_dict(policy_net.state_dict())
-        target_net.eval()
+
         # print("[*] target_net", target_net.eval())
         if os.path.exists(DQN_STORE_PATH):
             judge.replay_buffer = pickle.load(open(DQN_STORE_PATH, 'rb'))
@@ -50,9 +44,7 @@ class AlgorithmDQN:
         emergence_break = 0  # 用于防止错误训练数据扰乱神经网络
         target_step = 0
 
-        # 开始脚本
-        handld_top()
-        init_init()
+
 
         for episode in range(EPISODES):
             done = 0

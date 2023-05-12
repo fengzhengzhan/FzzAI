@@ -63,3 +63,6 @@ class NetworkCNN(nn.Module):
         self.load_state_dict(torch.load(path))
         #  self.load_state_dict(torch.load(path, map_location=torch.device('cpu')))
 
+    def load_model_othernet(self, othernet):
+        self.load_state_dict(othernet.state_dict())
+

@@ -8,8 +8,10 @@ def main():
     # menu = ParamMenu()
     # menu.printLogo()
     # print(os.getcwd())
-    logger = Logger("C:\Files\Data\Life\Code\GithubCode\FzzAI\dataset_autosave" + os.sep + confglobal.GLOBAL_LOG_PATH)
-    logger.log("main test")
+    Logger.log(DEBUG, "main")
+    Logger.log(DEBUG, "main")
+    Logger.log(DEBUG, "main")
+    Logger.log(DEBUG, "main")
 
 if __name__ == '__main__':
     main()

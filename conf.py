@@ -2,8 +2,10 @@
 ROOTDIR = "FzzAI"
 DATASET_AUTOSAVE_PATH = "dataset_autosave"
 
+# Log
 GLOBAL_LOG_PATH = "global.log"
-
+HAS_LOG_CONTROL = True
+HAS_LOG_WINDOW = True
 
 # agent_sense
 

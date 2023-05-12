@@ -7,7 +7,7 @@ class PrepareBindings:
 
     # 竞技场：愚人斗兽场
     def scenarioColosseumOfFools(self):
-        print("[-] Knight dead, restart in the ColosseumOfFools...")
+        Logger.log(INFO, "[-] Knight dead, restart in the ColosseumOfFools...")
         # 椅子到通道
         time.sleep(3)
         self.__action.keyboard.duringKey('J', 0.05)
@@ -57,20 +57,20 @@ class PrepareBindings:
         self.__action.keyboard.duringKey('W', 1.3)
         time.sleep(7.5)
         self.__action.keyboard.duringKey('W', 0.05)
-        print("[+] Finish start...")
+        Logger.log(INFO, "[+] Finish start in the ColosseumOfFools...")
 
     # 神居
-    def scenarioPantheonsStep1(self):
+    def scenarioPantheonsInit(self):
         time.sleep(3)
         self.__action.keyboard.duringKey('I', 0.05)
         time.sleep(1)
         self.__action.keyboard.duringKey('Space', 0.05)
         time.sleep(6)
-        print("[+] Finish start...")
+        Logger.log(INFO, "[+] Finish init in the Pantheons...")
 
     # 神居
-    def scenarioPantheonsStep2(self):
-        print("[-] Knight dead, restart in the Pantheons...")
+    def scenarioPantheonsRestart(self):
+        Logger.log(INFO, "[-] Knight dead, restart in the Pantheons...")
         # 起身
         self.__action.keyboard.duringKey('Space', 0.05)
         time.sleep(2)
@@ -83,7 +83,7 @@ class PrepareBindings:
         time.sleep(1)
         self.__action.keyboard.duringKey('Space', 0.05)
         time.sleep(6)
-        print("[+] Finish start...")
+        Logger.log(INFO, "[+] Finish start in the Pantheons...")
 
 
 class OperationBindings:
@@ -213,7 +213,7 @@ class KeyBindings:
 if __name__ == "__main__":
     time.sleep(3)
     kb = KeyBindings()
-    kb.prepare_key.scenarioPantheonsStep1()
+    kb.prepare_key.scenarioPantheonsInit()
 
     while True:  # 16种操作全部测试
         kb.operation_key.iAttack()

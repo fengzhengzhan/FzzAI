@@ -24,7 +24,7 @@ import threading
 from multiprocessing import Process, Manager, Queue
 
 import sqlite3
-import logging
+from logging import *
 
 import ctypes
 import ctypes.wintypes
@@ -40,17 +40,21 @@ import torchvision.transforms as T
 ######################
 
 from Agent.action import Action
+from Agent.listener import ProcessListenerKeyboard
 
 from Environment.transport_manager import ProcessTransportManager
 from Environment.read_screen import ProcessReadScreen
 from Environment.environment import Environment
+from Environment.change_env import ChangeEnv
 
 import Module.game_action_HollowKnight_fzz.config_hollowknight as confhk
 from Module.game_action_HollowKnight_fzz.boss_hornet.network_CNN import NetworkCNN
-# from Module.game_action_HollowKnight_fzz.TrainTest import ModelTrainTest
+from Module.game_action_HollowKnight_fzz.keybindings_hollowknight import PrepareBindings
+from Module.game_action_HollowKnight_fzz.traintest import ModelTrainTest
 
+import Tool.project_path as ProjectPath
+from Tool.status_window import GlobalStatus, StatusWindow
 from Tool.param_menu import ParamMenu
-from Tool.project_path import ProjectPath
 from Tool.logger import Logger
 
 import conf as confglobal

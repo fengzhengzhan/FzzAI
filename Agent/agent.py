@@ -6,4 +6,7 @@ class Agent:
         return Action(has_keyboard, has_mouse)
 
     def inputListenerManager(self):
-        pass
+        plk = ProcessListenerKeyboard()
+        transport_manager = ProcessTransportManager(plk).transport_manager
+        map_keycode = plk.map_keycode
+        return (transport_manager, map_keycode)
