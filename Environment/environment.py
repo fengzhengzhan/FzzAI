@@ -1,5 +1,5 @@
 from dependencies import *
-
+from Environment.change_env import ChangeEnv
 
 class Environment:
     def outputSceneManager(self):
@@ -7,3 +7,6 @@ class Environment:
 
     def outputMemoryManager(self):
         pass
+
+    def outputChangeEnv(self):
+        return ChangeEnv()

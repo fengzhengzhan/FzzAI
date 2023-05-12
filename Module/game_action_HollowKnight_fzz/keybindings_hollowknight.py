@@ -1,4 +1,5 @@
 from dependencies import *
+from Tool.logger import projlog
 
 
 class PrepareBindings:
@@ -66,7 +67,7 @@ class PrepareBindings:
         time.sleep(1)
         self.__action.keyboard.duringKey('Space', 0.05)
         time.sleep(6)
-        Logger.log(INFO, "[+] Finish init in the Pantheons...")
+        projlog(INFO, "[+] Finish init in the Pantheons...")
 
     # 神居
     def scenarioPantheonsRestart(self):
@@ -186,6 +187,13 @@ class OperationBindings:
     def escQuit(self):
         self.__action.keyboard.duringKey('ESC', 0.05)
 
+    def ctrlsSave(self):
+        self.__action.keyboard.pressKey('LeftCtrl')
+        self.__action.keyboard.pressKey('S')
+        time.sleep(0.05)
+        self.__action.keyboard.releaseKey('LeftCtrl')
+        self.__action.keyboard.releaseKey('S')
+
 
 # Actuals Functions
 class KeyBindings:
@@ -195,17 +203,18 @@ class KeyBindings:
 
         # 所有的攻击列表 10种攻击
         # ['i', 'j', 'k', 'l', 'r', 'ss', 'sl', 'qs', 'ql', 'e']
+        # 注册函数，使用时调用，kb.option_10['i']()
         self.option_10 = {
-            'i': self.operation_key.iAttack(),
-            'j': self.operation_key.jLeft(),
-            'k': self.operation_key.kAttack(),
-            'l': self.operation_key.lRight(),
-            'r': self.operation_key.rShortAttack(),
-            'ss': self.operation_key.spaceShort(),
-            'sl': self.operation_key.spaceLong(),
-            'qs': self.operation_key.qShortUse(),
-            'ql': self.operation_key.qLongUse(),
-            'e': self.operation_key.eRun(),
+            'i': self.operation_key.iAttack,
+            'j': self.operation_key.jLeft,
+            'k': self.operation_key.kAttack,
+            'l': self.operation_key.lRight,
+            'r': self.operation_key.rShortAttack,
+            'ss': self.operation_key.spaceShort,
+            'sl': self.operation_key.spaceLong,
+            'qs': self.operation_key.qShortUse,
+            'ql': self.operation_key.qLongUse,
+            'e': self.operation_key.eRun,
         }
 
 
@@ -213,24 +222,25 @@ class KeyBindings:
 if __name__ == "__main__":
     time.sleep(3)
     kb = KeyBindings()
-    kb.prepare_key.scenarioPantheonsInit()
+    # kb.option_10['i']()
+    kb.prepare_key.scenarioPantheonsInit()  # i
 
-    while True:  # 16种操作全部测试
-        kb.operation_key.iAttack()
-        kb.operation_key.jLeft()
-        time.sleep(1)
-        kb.operation_key.kDown()
-        kb.operation_key.lRight()
-        kb.operation_key.spaceLong()
-        kb.operation_key.spaceShort()
-        kb.operation_key.qShortUse()
-        kb.operation_key.qLongUse()
-        kb.operation_key.rShortAttack()
-        kb.operation_key.rLongAttack()
-        kb.operation_key.wLongRun()
-        kb.operation_key.eRun()
-        kb.operation_key.iqBoom()
-        kb.operation_key.kqBoom()
-        kb.operation_key.jqBoom()
-        kb.operation_key.lqBoom()
-        time.sleep(1)
+    # while True:  # 16种操作全部测试
+    #     kb.operation_key.iAttack()
+    #     kb.operation_key.jLeft()
+    #     time.sleep(1)
+    #     kb.operation_key.kDown()
+    #     kb.operation_key.lRight()
+    #     kb.operation_key.spaceLong()
+    #     kb.operation_key.spaceShort()
+    #     kb.operation_key.qShortUse()
+    #     kb.operation_key.qLongUse()
+    #     kb.operation_key.rShortAttack()
+    #     kb.operation_key.rLongAttack()
+    #     kb.operation_key.wLongRun()
+    #     kb.operation_key.eRun()
+    #     kb.operation_key.iqBoom()
+    #     kb.operation_key.kqBoom()
+    #     kb.operation_key.jqBoom()
+    #     kb.operation_key.lqBoom()
+    #     time.sleep(1)

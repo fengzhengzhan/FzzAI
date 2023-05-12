@@ -1,5 +1,3 @@
-import time
-
 from dependencies import *
 
 
@@ -12,16 +10,24 @@ class ModelTrainTest:
             os.makedirs(path_game_autosave)
 
     def train(self):
+        # 初始化信息获取类
+        agent = Agent()
+        env = Environment()
+        # 初始化状态类
         status = GlobalStatus()
 
-        # 置顶程序并启动第一次的进入操作
-        change_env = ChangeEnv()
+        # 初始化个性化定义类
+        change_env = env.outputChangeEnv()
         prepare_bindings = PrepareBindings()
+        operation_bindings = OperationBindings()
+
+        # 置顶程序并启动第一次的进入操作
         # Logger.log(DEBUG, reset.travelProcess())
         change_env.toppingProcess('无界面测试窗口.txt - 记事本', -10, 0, 1280, 720)
 
         # 进入战斗场景的前置操作（恢复环境）
         prepare_bindings.scenarioPantheonsInit()
+        operation_bindings.ctrlsSave()
 
         for epoch in range(confhk.EPOCH):
             # 初始化每次场景启动的参数
@@ -83,5 +89,5 @@ class ModelTrainTest:
 
 
 if __name__ == '__main__':
-    model_train_test = ModelTrainTest(ProjectPath.dateset_autosave_path)
+    model_train_test = ModelTrainTest(projectpath.dateset_autosave_path)
     model_train_test.train()
