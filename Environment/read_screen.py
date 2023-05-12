@@ -1,5 +1,6 @@
 from dependencies import *
 
+from Environment.transport_manager import ProcessTransportManager
 
 class GrabScreen:
     def __init__(self, region=(0, 0, 1280, 720), name_process=None):

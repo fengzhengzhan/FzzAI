@@ -10,7 +10,7 @@ class AlgorithmDQN:
         self.policy_network = NetworkClass(confhk.WIDTH, confhk.HEIGHT, confhk.ACTION_SIZE).to(confhk.DEVICE)
         if os.path.exists(model_path):
             self.policy_network.load_model(model_path)
-            Logger.log(INFO, "policy_net load finish!")
+            projlog(INFO, "policy_net load finish!")
         self.target_network = NetworkClass(confhk.WIDTH, confhk.HEIGHT, confhk.ACTION_SIZE).to(confhk.DEVICE)
         self.target_network.load_model_othernet(self.policy_network)
         self.target_network.eval()
@@ -145,27 +145,7 @@ class AlgorithmDQN:
 
 
 
-# 判定自己的能量作为攻击boss的血量
-    def self_blood_number(self_gray):
-        self_blood = 0
-        range_set = False
-        for self_bd_num in self_gray[0]:
-            if self_bd_num > 215 and range_set:
-                self_blood += 1
-                range_set = False
-            elif self_bd_num < 55:
-                range_set = True
-        return self_blood
 
-
-    # 判定自己的血量
-    def self_power_number(self_gray, power_window):
-        self_power = 0
-        for i in range(0, power_window[3] - power_window[1]):
-            self_power_num = self_gray[i][0]
-            if self_power_num > 90:
-                self_power += 1
-        return self_power
 
 class JUDGE():
     # 初始化class参数

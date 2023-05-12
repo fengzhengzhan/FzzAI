@@ -38,24 +38,9 @@ import torchvision.transforms as T
 ######################
 # Custom dependencies
 ######################
-
-from Agent.action import Action
-from Agent.listener import ProcessListenerKeyboard
-from Agent.agent import Agent
-
-from Environment.transport_manager import ProcessTransportManager
-from Environment.read_screen import ProcessReadScreen
-from Environment.environment import Environment
-from Environment.change_env import ChangeEnv
-
-import Module.game_action_HollowKnight_fzz.config_hollowknight as confhk
-from Module.game_action_HollowKnight_fzz.boss_hornet.network_CNN import NetworkCNN
-from Module.game_action_HollowKnight_fzz.keybindings_hollowknight import PrepareBindings, OperationBindings
-from Module.game_action_HollowKnight_fzz.traintest import ModelTrainTest
-
+# 依赖只能跨三个文件，无法跨越4个文件，因此将自定义模块从依赖导入包中删除，防止循环引用
 import Tool.project_path as projectpath
-from Tool.status_window import GlobalStatus, StatusWindow
-from Tool.param_menu import ParamMenu
 from Tool.logger import projlog
 
 import conf as confglobal
+import Module.game_action_HollowKnight_fzz.config_hollowknight as confhk

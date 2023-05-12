@@ -1,11 +1,17 @@
+import torch
+
 # Path of Project
 ROOTDIR = "FzzAI"
 DATASET_AUTOSAVE_PATH = "dataset_autosave"
+DATASET_SQLITE = "sqlitedb"
 
 # Log
 GLOBAL_LOG_PATH = "global.log"
 HAS_LOG_CONTROL = True
 HAS_LOG_WINDOW = True
+
+# 如果使用gpu
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # agent_sense
 

@@ -1,5 +1,9 @@
 from dependencies import *
 
+from action import Action
+from listener import ProcessListenerKeyboard
+from Environment.transport_manager import ProcessTransportManager
+
 
 class Agent:
     def inputAction(self, has_keyboard, has_mouse):

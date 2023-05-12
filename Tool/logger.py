@@ -1,4 +1,6 @@
-from dependencies import *
+import os
+from logging import *
+
 import Tool.project_path as projectpath
 import conf as confglobal
 
@@ -23,7 +25,8 @@ basicConfig(
     filename=projectpath.dateset_autosave_path + os.sep + confglobal.GLOBAL_LOG_PATH,
     filemode='a',
     level=DEBUG,
-    format=LOG_FORMAT
+    format=LOG_FORMAT,
+    encoding='utf-8',
 )
 
 

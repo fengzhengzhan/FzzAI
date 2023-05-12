@@ -1,4 +1,5 @@
 import os
+
 import conf as confglobal
 
 __source_path = os.getcwd()

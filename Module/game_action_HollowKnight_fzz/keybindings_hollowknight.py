@@ -1,14 +1,15 @@
 from dependencies import *
-from Tool.logger import projlog
+
+from Agent.agent import Agent
 
 
 class PrepareBindings:
     def __init__(self):
-        self.__action = Action(keyboard=True)
+        self.__action = Agent().inputAction(has_keyboard=True, has_mouse=False)
 
     # 竞技场：愚人斗兽场
     def scenarioColosseumOfFools(self):
-        Logger.log(INFO, "[-] Knight dead, restart in the ColosseumOfFools...")
+        projlog(INFO, "[-] Knight dead, restart in the ColosseumOfFools...")
         # 椅子到通道
         time.sleep(3)
         self.__action.keyboard.duringKey('J', 0.05)
@@ -58,7 +59,7 @@ class PrepareBindings:
         self.__action.keyboard.duringKey('W', 1.3)
         time.sleep(7.5)
         self.__action.keyboard.duringKey('W', 0.05)
-        Logger.log(INFO, "[+] Finish start in the ColosseumOfFools...")
+        projlog(INFO, "[+] Finish start in the ColosseumOfFools...")
 
     # 神居
     def scenarioPantheonsInit(self):
@@ -71,7 +72,7 @@ class PrepareBindings:
 
     # 神居
     def scenarioPantheonsRestart(self):
-        Logger.log(INFO, "[-] Knight dead, restart in the Pantheons...")
+        projlog(INFO, "[-] Knight dead, restart in the Pantheons...")
         # 起身
         self.__action.keyboard.duringKey('Space', 0.05)
         time.sleep(2)
@@ -84,12 +85,12 @@ class PrepareBindings:
         time.sleep(1)
         self.__action.keyboard.duringKey('Space', 0.05)
         time.sleep(6)
-        Logger.log(INFO, "[+] Finish start in the Pantheons...")
+        projlog(INFO, "[+] Finish start in the Pantheons...")
 
 
 class OperationBindings:
     def __init__(self):
-        self.__action = Action(keyboard=True)
+        self.__action = Agent().inputAction(has_keyboard=True, has_mouse=False)
 
     # 移动
     def iUp(self):

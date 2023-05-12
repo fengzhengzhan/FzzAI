@@ -1,9 +1,10 @@
-from dependencies import *
+import os
+import Tool.project_path as projectpath
 
 GAME_NAME = "HollowKnight"
 
 # Save Path
-PATH_DATASET = "{}{}".format(GAME_NAME, "Data")
+PATH_DATASET = GAME_NAME + "Data"
 
 # Network arguments
 GAMMA = 0.9
@@ -11,9 +12,6 @@ LEARN_RATE = 0.001
 
 # Train arguments
 EPOCH = 30000
-
-# 如果使用gpu
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 ACTION_SIZE = 10
 
@@ -25,7 +23,7 @@ main_window = (66, 99, 1225, 610)  # (1160, 512, 4) -> (128, 290) 4倍缩放
 blood_window = (227, 97, 530, 98)
 power_window = (176, 93, 177, 158)
 
-DQN_MODEL_PATH = "E:\\1_mycode\\Knight_DQN\\model\\dqn_model.pt"
+DQN_MODEL_PATH = projectpath.dateset_autosave_path + os.sep + PATH_DATASET + os.sep + "DQN_model.pt"
 DQN_STORE_PATH = "E:\\1_mycode\\Knight_DQN\\model\\dqn_store"
 DQN_LOG_PATH = "model\\dqn_log.log"
 

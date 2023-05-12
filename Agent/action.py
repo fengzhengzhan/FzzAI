@@ -363,7 +363,7 @@ if __name__ == "__main__":
     action = Action(keyboard=True, mouse=True)
     while True:
         # time.sleep(0.3)
-        time.sleep(1)
+        time.sleep(2)
         action.keyboard.duringKey('E', 0.5)
         # action.mouse.duringClick('r', 0.5)
         # action.mouse.scrollVertical(1)
