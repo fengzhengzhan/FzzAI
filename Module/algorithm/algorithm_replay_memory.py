@@ -52,7 +52,7 @@ class AlgorithmReplayMemory:
                    reservedword2):
         self.cursor.execute(
             "INSERT INTO {} "
-            "(time, state, action, allaction, reward, nextstate, epoch, step, manualscore, reservedword,reservedword2) "
+            "(time, state, action, totalaction, reward, nextstate, epoch, step, manualscore, reservedword,reservedword2) "
             "VALUES ({},{},{},{},{},{},{},{},{},{},{})"
             .format(self.table_name, time, state, action, allaction, reward, nextstate, epoch, step, manualscore,
                     reservedword, reservedword2))

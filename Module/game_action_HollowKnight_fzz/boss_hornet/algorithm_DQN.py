@@ -6,14 +6,26 @@ class AlgorithmDQN:
     1. Fixed Q target
     2. Experience replay
     """
-    def __init__(self, NetworkClass, model_path=confhk.DQN_MODEL_PATH):
-        self.policy_network = NetworkClass(confhk.WIDTH, confhk.HEIGHT, confhk.ACTION_SIZE).to(confhk.DEVICE)
+    def __init__(self, policy_network, target_network, model_path=confhk.DQN_MODEL_PATH):
+        """
+        policy_network 传入类对象。继承nn.Module
+        target_network 传入类对象。继承nn.Module
+        """
+        self.policy_network = policy_network
         if os.path.exists(model_path):
             self.policy_network.load_model(model_path)
             projlog(INFO, "policy_net load finish!")
-        self.target_network = NetworkClass(confhk.WIDTH, confhk.HEIGHT, confhk.ACTION_SIZE).to(confhk.DEVICE)
+        self.target_network = target_network
         self.target_network.load_model_othernet(self.policy_network)
         self.target_network.eval()
+
+    def chooseAction(self, state, network_probability):
+        # Network probability 代表动作的随机性，应该随着时间越来越大。
+        if random.random() >= network_probability:
+            return random.randint(0, confhk.ACTION_SIZE - 1)
+        else:
+            state = self.policy_network(state).detach()
+            return np.argmax(state)
 
     def core(self):
         pass
@@ -184,12 +196,7 @@ class JUDGE():
         loss.backward()
         policy_net.opt.step()
 
-    def choose_action(self, policy_net, station, choose_time):
-        if random.random() >= (self.choose_action_time * 5 - choose_time) / self.choose_action_time * 6:
-            return random.randint(0, self.action_size - 1)
-        else:
-            state = policy_net(station).detach()
-            return np.argmax(state)
+
 
     # 进行reward
     # 由于无法观测到boss血量，使用时间作为reward, reward为持续时间 tqt

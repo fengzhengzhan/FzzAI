@@ -60,8 +60,10 @@ class ProcessReadScreen(Process):
     Use Manager communicate information.
     """
 
-    def __init__(self):
+    def __init__(self, region=(0, 0, 1280, 720), name_process=None):
         super(ProcessReadScreen, self).__init__()
+        self.region = region
+        self.name_process = name_process
 
     def setManager(self, transport_manager):
         self.transport_manager = transport_manager
@@ -71,7 +73,7 @@ class ProcessReadScreen(Process):
         return img
 
     def run(self):
-        gs = GrabScreen()
+        gs = GrabScreen(self.region, self.name_process)
         while True:
             # 多进程获取屏幕截图
             data = self.converScreen(gs.gainScreen())

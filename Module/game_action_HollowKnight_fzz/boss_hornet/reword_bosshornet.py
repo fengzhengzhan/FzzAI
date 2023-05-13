@@ -1,7 +1,8 @@
 from dependencies import *
 
 class Reward:
-    pass
+    def gainReward(self):
+        return 0
 
 
 

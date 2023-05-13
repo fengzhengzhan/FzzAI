@@ -6,10 +6,16 @@ class GlobalStatus:
         self.start_time = time.time()
         self.last_time = time.time()
 
-        self.goon = True  # 是否停止
-        self.total_reward = 0  # 总的奖赏
-        self.avg_step = 0  # 平均操作数
+        self.goon = True  # go on是否停止
+        self.round_reward = 0  # 总的奖赏
+        self.round_step = 0  # 平均操作数
         self.total_step = 0  # 每一局总操作数
+
+    def resetStatus(self):
+        self.goon = True
+        self.round_reward = 0
+        self.round_step = 0
+        self.total_step = 0
 
 
 class StatusWindow:
