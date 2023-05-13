@@ -4,6 +4,9 @@ import torch
 ROOTDIR = "FzzAI"
 DATASET_AUTOSAVE_PATH = "dataset_autosave"
 DATASET_SQLITE = "sqlitedb"
+DATASET_SQLITE_FILENAME = "data.db"
+DATASET_DBTABLE_SUFFIX = "Table"
+
 
 # Log
 GLOBAL_LOG_PATH = "global.log"

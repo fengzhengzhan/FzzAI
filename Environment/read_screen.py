@@ -2,6 +2,7 @@ from dependencies import *
 
 from Environment.transport_manager import ProcessTransportManager
 
+
 class GrabScreen:
     def __init__(self, region=(0, 0, 1280, 720), name_process=None):
         # 得到图片范围
@@ -58,6 +59,7 @@ class ProcessReadScreen(Process):
     在多进程中使用manager传递信息
     Use Manager communicate information.
     """
+
     def __init__(self):
         super(ProcessReadScreen, self).__init__()
 
@@ -76,7 +78,6 @@ class ProcessReadScreen(Process):
             self.transport_manager.sendTransData(data)
 
 
-
 if __name__ == '__main__':
     # main_window = (0, 0, 800, 500)
     # # blood_window = (222, 95, 530, 120)
@@ -91,7 +92,6 @@ if __name__ == '__main__':
     #         break
     # cv2.waitKey()  # 视频结束后，按任意键退出
     # cv2.destroyAllWindows()
-
     # 测试manager
     transport_manager = ProcessTransportManager(ProcessReadScreen()).transport_manager
     time.sleep(3)

@@ -48,7 +48,18 @@ def logFile(level, msg):
 
 def logControl(level, msg):
     """将日志输出到控制台"""
-    print(msg)
+    printflag = ""
+    if level == DEBUG:
+        printflag = "[*] "
+    elif level == INFO:
+        printflag = "[i] "
+    elif level == WARNING:
+        printflag = "[?] "
+    elif level == ERROR:
+        printflag = "[!] "
+    elif level == CRITICAL:
+        printflag = "[!!] "
+    print(printflag + msg)
 
 
 def logStatusWindow(level, msg):

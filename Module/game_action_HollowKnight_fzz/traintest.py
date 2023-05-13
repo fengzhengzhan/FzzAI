@@ -54,10 +54,11 @@ class ModelTrainTest:
             while status.goon:
                 print("test")
                 # Step1: 获取环境
-
+                # state
                 # Step2: 执行动作
                 # 建议每次相应时间<0.25即一秒钟4个操作，否则会感觉卡卡的，耗时按键模拟除外
                 # Step3: 再次获取环境
+                # next_state
                 # Step4: 获得奖励
                 # Step5: 保存数据和模型
                 pass
