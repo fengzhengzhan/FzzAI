@@ -5,19 +5,6 @@ class ChangeEnv:
     """
     Change the environment status, make the program continuous.
     """
-
-    def travelProcess(self):
-        name_process = []
-
-        def __enum_windows(hwnd, lParam):
-            if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
-                name_process.append({hwnd: win32gui.GetWindowText(hwnd)})
-
-        win32gui.EnumWindows(__enum_windows, 0)
-        # for np in name_process:
-        #     print(np)
-        return name_process
-
     def toppingProcess(self, name_process, x, y, width, height, has_nosize=False, has_nomove=False):
         # 0, 0, 1280, 720,
         hwnd = win32gui.FindWindow(None, name_process)
@@ -44,4 +31,3 @@ if __name__ == '__main__':
     reset = ChangeEnv()
     print(reset.travelProcess())
     reset.toppingProcess('无界面测试窗口.txt - 记事本', -10, 0, 1280, 720)
-
