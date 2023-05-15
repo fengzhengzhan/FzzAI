@@ -42,8 +42,10 @@ def logFile(level, msg):
         warning("[?] " + msg)
     elif level == ERROR:
         error("[!] " + msg)
+        raise Exception("[!] " + msg)
     elif level == CRITICAL:
         critical("[!!] " + msg)
+        raise Exception("[!!] " + msg)
 
 
 def logControl(level, msg):

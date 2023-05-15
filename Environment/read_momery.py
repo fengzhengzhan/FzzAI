@@ -1,7 +1,4 @@
-import os
-
 from dependencies import *
-
 
 class ReadMemory:
     def __init__(self, name_process):
@@ -163,6 +160,7 @@ class ReadMemory:
         self.readProcessMemory(self.process_handle, base_address,
                                ctypes.byref(data), ctypes.sizeof(data), ctypes.byref(bytes_read))
         for each_offset in array_offset:
+            print(data.value, each_offset)
             self.readProcessMemory(self.process_handle, data.value + each_offset,
                                    ctypes.byref(data), ctypes.sizeof(data), ctypes.byref(bytes_read))
 
@@ -186,8 +184,6 @@ if __name__ == '__main__':
     print(score.travelDll())
 
     # 获得角色血量
-    # print(score.gainValueFromMuladdr("mono-2.0-bdwgc.dll", 0x00497DE8, [0x90, 0xE08, 0x48, 0x70, 0x68, 0x218, 0x190]))
-    # print(score.gainValueFromMuladdr("mono-2.0-bdwgc.dll", 0x00497DE8, [0x190, 0x218, 0x68, 0x70, 0x48, 0xE08, 0x90]))
     # print(score.gainValueFromMuladdr("UnityPlayer.dll", 0x019B8BE0, [0x10, 0x88, 0x28, 0x150, 0x68, 0x218, 0x190]))
     print(score.gainValueFromMuladdr("UnityPlayer.dll", 0x019D7CF0, [0x10, 0x100, 0x28, 0x68, 0x218, 0x190]))
 
