@@ -17,6 +17,9 @@ class GlobalStatus:
         self.round_step = 0
         self.total_step = 0
 
+        self.start_time = time.time()
+        self.last_time = self.start_time
+
 
 class StatusWindow:
     """

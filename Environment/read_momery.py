@@ -1,6 +1,14 @@
 from dependencies import *
 
-class ReadMemory:
+
+class ReadMemory(object):
+    _instance = None
+
+    def __new__(cls, *args, **kw):
+        if cls._instance is None:
+            cls._instance = object.__new__(cls)
+        return cls._instance
+
     def __init__(self, name_process):
         """
         kernel32.ReadProcessMemory是一个 Windows API 函数，用于读取指定进程的内存区域中的数据。
@@ -50,7 +58,7 @@ class ReadMemory:
         self.map_dll = {}
         for i in self.hModule:
             temp = win32process.GetModuleFileNameEx(self.process_handle, i.value)
-            # projlog(DEBUG, "{} : {} ".format(str(temp), str(hex(i.value))))
+            # projlog(DEBUG, f"{str(temp)} : {str(hex(i.value)}")
             self.map_dll[os.path.basename(temp)] = i.value
 
     def __del__(self):
@@ -134,7 +142,7 @@ class ReadMemory:
             self.process_handle, address, ctypes.byref(data), ctypes.sizeof(data), ctypes.byref(bytes_read))
         e = ctypes.get_last_error()
 
-        projlog(DEBUG, 'result: {}, err code: {}, bytes_read: {}'.format(result, e, bytes_read.value))
+        # projlog(DEBUG, 'result: {}, err code: {}, bytes_read: {}'.format(result, e, bytes_read.value))
         projlog(INFO, 'data: {:016X}h'.format(data.value))
         return hex(data.value)
 
@@ -153,19 +161,19 @@ class ReadMemory:
 
     def __gainValueFromMuladdrX64(self, library_address, baseoffset_address: int, array_offset: list):
         base_address = library_address + baseoffset_address
-        projlog(DEBUG, "base_address: {}".format(hex(library_address + baseoffset_address)))
+        # projlog(DEBUG, "base_address: {}".format(hex(library_address + baseoffset_address)))
 
         data = ctypes.c_ulonglong()
         bytes_read = ctypes.c_ulonglong()
         self.readProcessMemory(self.process_handle, base_address,
                                ctypes.byref(data), ctypes.sizeof(data), ctypes.byref(bytes_read))
         for each_offset in array_offset:
-            print(data.value, each_offset)
+            # projlog(DEBUG, f"array_offset: {data.value} {each_offset}")
             self.readProcessMemory(self.process_handle, data.value + each_offset,
                                    ctypes.byref(data), ctypes.sizeof(data), ctypes.byref(bytes_read))
 
-        projlog(DEBUG, 'bytes_read: {}'.format(bytes_read.value))
-        projlog(INFO, 'data: {:016X}h'.format(data.value))
+        # projlog(DEBUG, 'bytes_read: {}'.format(bytes_read.value))
+        projlog(INFO, f"data: {data.value:016X}h")
         return hex(data.value)
 
     def gainValueFromMuladdr(self, library_name: str, baseoffset_address: int, array_offset: list):
@@ -185,9 +193,10 @@ if __name__ == '__main__':
 
     # 获得角色血量
     # print(score.gainValueFromMuladdr("UnityPlayer.dll", 0x019B8BE0, [0x10, 0x88, 0x28, 0x150, 0x68, 0x218, 0x190]))
-    print(score.gainValueFromMuladdr("UnityPlayer.dll", 0x019D7CF0, [0x10, 0x100, 0x28, 0x68, 0x218, 0x190]))
+    # print(score.gainValueFromMuladdr("UnityPlayer.dll", 0x019D7CF0, [0x10, 0x100, 0x28, 0x68, 0x218, 0x190]))
 
     # print(score.gainValueFromOneaddr(0x1D78A0F3190))
+    print(score.gainValueFromOneaddr(0x170835639B0))
 
     # base_address = 0x00416D60  # 0x00691048  0x00694B00  0x00694B8C
     # offset_address = 0x00000190

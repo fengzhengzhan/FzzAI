@@ -9,7 +9,7 @@ class AlgorithmReplayMemory:
             os.makedirs(path_sqlitedb)
             projlog(INFO, "[+] " + str(path_sqlitedb))
 
-        # 创建数据库文件、
+        # 创建数据库文件
         self.conn = sqlite3.connect(os.path.join(path_sqlitedb, confglobal.DATASET_SQLITE_FILENAME))
         projlog(INFO, "Open sqlite database successfully. " + str(self.conn))
         self.cursor = self.conn.cursor()
@@ -23,39 +23,61 @@ class AlgorithmReplayMemory:
             self.conn.close()
 
     def __createTable(self):
+        """
+        table_name为 游戏名Table
+        Parameters:
+            id INT PRIMARY KEY NOT NULL  表示数量，主键自动增长
+            time VARCHAR(32) NOT NULL  数据存入的时间
+            state MEDIUMBLOB NOT NULL
+            action INT NOT NULL
+            allaction INT NOT NULL
+            reward DOUBLE NOT NULL
+            nextstate MEDIUMBLOB NOT NULL
+            networkname VARCHAR(64) NOT NULL  网络名称
+            epoch INT  轮数
+            step INT  轮数中的步数
+            loss DOUBLE  训练产生的loss值
+            trainnum INT  用于训练的次数
+            source VARCHAR(32)  数据来源，网络自动生成、人工手动操作获取
+            manualscore TINYINT  是否进行人工打分，人工打分越高，说明操作越好，越需要被多次训练
+            reservedword VARCHAR(64)  保留字段
+        """
         # 查看所有表
         self.cursor.execute("SELECT name FROM sqlite_master WHERE TYPE='table' ORDER BY name")
         array_tables = self.cursor.fetchall()
         projlog(DEBUG, "Database tables: " + str(array_tables))
-        # table_name为 游戏名Table
+
         if self.table_name not in array_tables:
             # 表字段
-            # id,time,state,action,allaction,reward,nextstate,epoch,step,manualscore(0-10),reservedword,reservedword2
             self.cursor.execute(
-                "CREATE TABLE {}("
-                "id INT PRIMARY KEY NOT NULL,"
-                "time VARCHAR(32) NOT NULL,"
-                "state MEDIUMBLOB NOT NULL,"
-                "action INT NOT NULL,"
-                "allaction INT NOT NULL,"
-                "reward DOUBLE NOT NULL,"
-                "nextstate MEDIUMBLOB NOT NULL,"
-                "epoch INT,"
-                "step INT,"
-                "manualscore TINYINT,"
-                "reservedword VARCHAR(64),"
-                "reservedword2 VARCHAR(64))".format(self.table_name))
+                f"CREATE TABLE {self.table_name}("
+                f"id INT PRIMARY KEY NOT NULL,"
+                f"time VARCHAR(32) NOT NULL,"
+                f"state MEDIUMBLOB NOT NULL,"
+                f"action INT NOT NULL,"
+                f"allaction INT NOT NULL,"
+                f"reward DOUBLE NOT NULL,"
+                f"nextstate MEDIUMBLOB NOT NULL,"
+                f"networkname VARCHAR(64) NOT NULL,"
+                f"epoch INT,"
+                f"step INT,"
+                f"loss DOUBLE,"
+                f"trainnum INT NOT NULL,"
+                f"source VARCHAR(32) NOT NULL,"
+                f"manualscore TINYINT NOT NULL,"
+                f"reservedword VARCHAR(64))")
             self.conn.commit()
             projlog(INFO, "[+] Create Table: " + str(self.table_name))
 
-    def insertData(self, time, state, action, allaction, reward, nextstate, epoch, step, manualscore, reservedword,
-                   reservedword2):
+    # todo 将数据保存在内存中（按照数量大小设置上限），同时开启进程实时存储数据
+    def insertData(self, time, state, action, allaction, reward, nextstate,
+                   networkname, epoch, step, loss, trainnum, source, manualscore, reservedword):
         self.cursor.execute(
-            "INSERT INTO {} "
-            "(time, state, action, totalaction, reward, nextstate, epoch, step, manualscore, reservedword,reservedword2) "
-            "VALUES ({},{},{},{},{},{},{},{},{},{},{})"
-            .format(self.table_name, time, state, action, allaction, reward, nextstate, epoch, step, manualscore,
-                    reservedword, reservedword2))
+            f"INSERT INTO {self.table_name} "
+            f"(time, state, action, allaction, reward, nextstate, "
+            f"networkname, epoch, step, loss, trainnum, source, manualscore, reservedword, reservedword2) "
+            f"VALUES ({time}, {state}, {action}, {allaction}, {reward}, {nextstate}, "
+            f"{networkname}, {epoch}, {step}, {loss}, {trainnum}, {source}, {manualscore}, {reservedword})")
 
     def selectData(self):
         pass

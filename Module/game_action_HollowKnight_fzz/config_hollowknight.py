@@ -2,6 +2,7 @@ import os
 import Tool.project_path as projectpath
 
 GAME_NAME = "HollowKnight"
+PROCESS_NAME = "Hollow Knight"
 
 # Save Path
 PATH_DATASET = GAME_NAME + "Data"

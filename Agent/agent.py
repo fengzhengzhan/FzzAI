@@ -11,6 +11,6 @@ class Agent:
 
     def inputListenerManager(self):
         plk = ProcessListenerKeyboard()
-        transport_manager = ProcessTransportManager(plk).transport_manager
+        listener_manager = ProcessTransportManager(plk).transport_manager
         map_keycode = plk.map_keycode
-        return (transport_manager, map_keycode)
+        return (listener_manager, map_keycode)

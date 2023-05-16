@@ -1,8 +1,7 @@
-import time
-
 from dependencies import *
 
 from Agent.agent import Agent
+
 from Environment.environment import Environment
 from Tool.status_window import GlobalStatus
 
@@ -20,7 +19,8 @@ class ModelTrainTest:
         # 初始化环境
         # 创建HollowKnight游戏数据目录
         path_game_autosave = os.path.join(path_autosave, confhk.PATH_DATASET)
-        projlog(DEBUG, path_game_autosave)
+        projlog(DEBUG, f"Project Root Directory: {projectpath.root_path}")
+        projlog(DEBUG, f"path_game_autosave: {str(path_game_autosave)}")
         if not os.path.exists(path_game_autosave):
             os.makedirs(path_game_autosave)
             projlog(INFO, "[+] " + str(path_game_autosave))
@@ -29,17 +29,23 @@ class ModelTrainTest:
         # 初始化信息获取类
         agent = Agent()
         env = Environment()
+        # 初始化按键模拟、按键监听
+        keyboard_action = agent.inputAction(has_keyboard=True, has_mouse=False)
+        listener_manager, map_keycode = agent.inputListenerManager()
+
+        # 初始化屏幕图片获取、读取内存、更改游戏进程状态
+        manager_scene = env.outputSceneManager()
+        read_memory = env.outputMemory(confhk.PROCESS_NAME)
+        change_env = env.outputChangeEnv()
 
         # 初始化状态类
         status = GlobalStatus()
-        agent_status = CharacterStatus()
-        boos_status = BossStatus()
+        agent_status = CharacterStatus(read_memory)
+        boos_status = BossStatus(read_memory)
 
         # 初始化个性化定义类
-        change_env = env.outputChangeEnv()
-        manager_scene = env.outputSceneManager()
-        prepare_bindings = PrepareBindings()
-        operation_bindings = OperationBindings()
+        prepare_bindings = PrepareBindings(keyboard_action)
+        operation_bindings = OperationBindings(keyboard_action)
 
         # 初始化网络模型
         policy_network = NetworkCNN(confhk.WIDTH, confhk.HEIGHT, confhk.ACTION_SIZE).to(confglobal.DEVICE)
@@ -49,23 +55,24 @@ class ModelTrainTest:
 
         # 置顶程序并启动第一次的进入操作
         # projlog(DEBUG, change_env.travelProcess())
-        # change_env.toppingProcess('无界面测试窗口.txt - 记事本', -10, 0, 1280, 720)
-        change_env.toppingProcess('Hollow Knight', 0 - 8, 0, 1280 + 16, 720 + 39)
+        change_env.toppingProcess('无界面测试窗口.txt - 记事本', -10, 0, 1280, 720)
+        # change_env.toppingProcess('Hollow Knight', 0 - 8, 0, 1280 + 16, 720 + 39)
 
         # 进入战斗场景的前置操作（恢复环境）
         # prepare_bindings.scenarioPantheonsInit()
         # operation_bindings.ctrlsSave()
 
+        # for epoch in reloading(range(confhk.EPOCH)):
         for epoch in range(confhk.EPOCH):
-            # 初始化每次场景启动的参数
+            # 初始化每次场景启动的参数；记录时间
             status.resetStatus()
 
             # 初始化展示状态
             # agent_status
 
-            # 记录时间
-            status.start_time = time.time()
-            status.last_time = status.start_time
+            agent_status.updateStatus()
+            boos_status.updateStatus()
+
 
             # 进入攻击场景
             while status.goon:

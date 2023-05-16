@@ -4,8 +4,8 @@ from Agent.agent import Agent
 
 
 class PrepareBindings:
-    def __init__(self):
-        self.__action = Agent().inputAction(has_keyboard=True, has_mouse=False)
+    def __init__(self, keyboard_action):
+        self.__action = keyboard_action
 
     # 竞技场：愚人斗兽场
     def scenarioColosseumOfFools(self):
@@ -89,8 +89,8 @@ class PrepareBindings:
 
 
 class OperationBindings:
-    def __init__(self):
-        self.__action = Agent().inputAction(has_keyboard=True, has_mouse=False)
+    def __init__(self, keyboard_action):
+        self.__action = keyboard_action
 
     # 移动
     def iUp(self):
