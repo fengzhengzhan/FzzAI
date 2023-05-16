@@ -1,12 +1,16 @@
 from dependencies import *
 
+
 class AlgorithmDQN:
     """
     Deep Q-Network
     1. Fixed Q target
     2. Experience replay
     """
-    def __init__(self, policy_network, target_network, model_path=confhk.DQN_MODEL_PATH):
+
+    def __init__(self, policy_network, target_network,
+                 replay_buffer, batch_size=confhk.BATCH_SIZE, action_size=confhk.ACTION_SIZE,
+                 model_path=confhk.DQN_MODEL_PATH):
         """
         policy_network 传入类对象。继承nn.Module
         target_network 传入类对象。继承nn.Module
@@ -19,19 +23,45 @@ class AlgorithmDQN:
         self.target_network.load_model_othernet(self.policy_network)
         self.target_network.eval()
 
+        self.replay_buffer = replay_buffer
+        self.batch_size = batch_size
+        self.action_size = action_size
+
     def chooseAction(self, state, network_probability):
         # Network probability 代表动作的随机性，应该随着时间越来越大。
         if random.random() >= network_probability:
-            return random.randint(0, confhk.ACTION_SIZE - 1)
+            return random.randint(0, self.action_size - 1)
         else:
             state = self.policy_network(state).detach()
             return np.argmax(state)
 
-    def core(self):
-        pass
+    # 训练网络，经验回放
+    def trainNetwork(self):
+        # step 1: obtain random minibatch from replay memory!
+        minibatch = random.sample(self.replay_buffer, self.batch_size)
+        # 从记忆库中采样BATCH_SIZE
+        # print("[+] station_batch", station_batch, station_batch)
+        # print("[+] action_batch", action_batch, action_batch)
+        # print("[+] reward_batch", reward_batch, reward_batch)
+        # print("[+] next_station_batch", next_station_batch, next_station_batch)
+        q_batch = []
+        tq_next_batch = []
+        for i in range(0, self.batch_size):
+            argm = minibatch[i][1].argmax()
+            q = self.policy_network(minibatch[i][0]).detach()[argm]
+            q_batch.append(q)
+            q_next = self.target_network(minibatch[i][3]).detach().max()
+            tq = minibatch[i][2] + confhk.GAMMA * q_next
+            tq_next_batch.append(tq)
+        q_batch = torch.as_tensor(q_batch, dtype=torch.float32)
+        tq_next_batch = torch.as_tensor(tq_next_batch, dtype=torch.float32)
 
-    def process(self):
-        pass
+        loss = self.policy_network.mls(q_batch, tq_next_batch).requires_grad_(True)
+
+        self.policy_network.opt.zero_grad()
+        loss.backward()
+        self.policy_network.opt.step()
+
 
 """
         judge = JUDGE()
@@ -42,14 +72,7 @@ class AlgorithmDQN:
             judge.replay_buffer = pickle.load(open(DQN_STORE_PATH, 'rb'))
             print("[*] REPLAY_BUFFER load finish! len:", len(judge.replay_buffer))
 
-        plt_step_list = []
-        plt_step = 0
-        plt_reward = []
-        plt.ion()
-        plt.figure(1, figsize=(10, 1))
-
-        plt.plot(plt_step_list, plt_reward, color="orange")
-        plt.pause(3)
+        
 
         # DQN init
         paused = True
@@ -158,72 +181,8 @@ class AlgorithmDQN:
 
 
 
-
-
-class JUDGE():
-    # 初始化class参数
-    def __init__(self):
-        self.replay_buffer = []
-        self.batch_size = BATCH_SIZE
-        self.action_size = ACTION_SIZE
-        self.all_blood = 0
-        self.all_power = 0
-        self.choose_action_time = CHOOSE_ACTION_TIME  # 根据时间指导随机的操作选择引导
-
-    # 经验回放
-    def train_network(self, policy_net, target_net, num_step):
-        # step 1: obtain random minibatch from replay memory!
-        minibatch = random.sample(self.replay_buffer, self.batch_size)
-        # 从记忆库中采样BATCH_SIZE
-        # print("[+] station_batch", station_batch, station_batch)
-        # print("[+] action_batch", action_batch, action_batch)
-        # print("[+] reward_batch", reward_batch, reward_batch)
-        # print("[+] next_station_batch", next_station_batch, next_station_batch)
-        q_batch = []
-        tq_next_batch = []
-        for i in range(0, self.batch_size):
-            argm = minibatch[i][1].argmax()
-            q = policy_net(minibatch[i][0]).detach()[argm]
-            q_batch.append(q)
-            q_next = target_net(minibatch[i][3]).detach().max()
-            tq = minibatch[i][2] + GAMMA * q_next
-            tq_next_batch.append(tq)
-        q_batch = torch.as_tensor(q_batch, dtype=torch.float32)
-        tq_next_batch = torch.as_tensor(tq_next_batch, dtype=torch.float32)
-
-        loss = policy_net.mls(q_batch, tq_next_batch).requires_grad_(True)
-
-        policy_net.opt.zero_grad()
-        loss.backward()
-        policy_net.opt.step()
-
-
-
-    # 进行reward
-    # 由于无法观测到boss血量，使用时间作为reward, reward为持续时间 tqt
-    # 自身费血将会受到-reward
-    #
-
-    def action_judge(self, init_time, next_self_blood, next_self_power, action, stop, emergence_break):
+    
         
 
-    # 列表存储
-    def store_data(self, station, action, reward, next_station):
-        one_hot_action = np.zeros(self.action_size)
-        one_hot_action[action] = 1
-        self.replay_buffer.append((station, one_hot_action, reward, next_station))
-        if len(self.replay_buffer) > REPLAY_SIZE:
-            self.replay_buffer.pop(0)
 
-
-
-
-# 将REPLAY_BUFFER经验回放的存储库弹出一部分
-REPLAY_BUFFER = []
-if os.path.exists(DQN_STORE_PATH):
-    REPLAY_BUFFER = pickle.load(open(DQN_STORE_PATH, 'rb'))
-for i in range(600):
-    REPLAY_BUFFER.pop(len(REPLAY_BUFFER) - 1)
-pickle.dump(REPLAY_BUFFER, open(DQN_STORE_PATH, 'wb'))
-print(REPLAY_BUFFER, type(REPLAY_BUFFER), len(REPLAY_BUFFER))
 """

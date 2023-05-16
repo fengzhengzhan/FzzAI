@@ -89,5 +89,25 @@ class AlgorithmReplayMemory:
         pass
 
 
+#     # 列表存储
+#     def store_data(self, station, action, reward, next_station):
+#         one_hot_action = np.zeros(self.action_size)
+#         one_hot_action[action] = 1
+#         self.replay_buffer.append((station, one_hot_action, reward, next_station))
+#         if len(self.replay_buffer) > REPLAY_SIZE:
+#             self.replay_buffer.pop(0)
+#
+#
+#
+#
+# # 将REPLAY_BUFFER经验回放的存储库弹出一部分
+# REPLAY_BUFFER = []
+# if os.path.exists(DQN_STORE_PATH):
+#     REPLAY_BUFFER = pickle.load(open(DQN_STORE_PATH, 'rb'))
+# for i in range(600):
+#     REPLAY_BUFFER.pop(len(REPLAY_BUFFER) - 1)
+# pickle.dump(REPLAY_BUFFER, open(DQN_STORE_PATH, 'wb'))
+# print(REPLAY_BUFFER, type(REPLAY_BUFFER), len(REPLAY_BUFFER))
+
 if __name__ == '__main__':
     AlgorithmReplayMemory(confhk.GAME_NAME + confglobal.DATASET_DBTABLE_SUFFIX)

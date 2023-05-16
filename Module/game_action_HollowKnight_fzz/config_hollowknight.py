@@ -10,10 +10,10 @@ PATH_DATASET = GAME_NAME + "Data"
 # Network arguments
 GAMMA = 0.9
 LEARN_RATE = 0.001
+BATCH_SIZE = 8  # 采样个数，每次采样越多越好，最好保持64以上（通过多次训练一次传递可以达到同样效果）
 
 # Train arguments
 EPOCH = 30000
-
 ACTION_SIZE = 10
 
 # train
@@ -30,7 +30,7 @@ DQN_LOG_PATH = "model\\dqn_log.log"
 
 REPLAY_SIZE = 4000
 STORE_SIZE = 1200  # 所需要存储的次数 1500
-BATCH_SIZE = 8  # 采样个数
+
 UPDATE_STEP = 50  # 更新target_net次数
 
 CHOOSE_ACTION_TIME = 30.0

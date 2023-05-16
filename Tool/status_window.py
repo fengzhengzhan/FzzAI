@@ -44,6 +44,15 @@ class StatusWindow:
     def print_show(self):
         pass
 
+# plt_step_list = []
+# plt_step = 0
+# plt_reward = []
+# plt.ion()
+# plt.figure(1, figsize=(10, 1))
+#
+# plt.plot(plt_step_list, plt_reward, color="orange")
+# plt.pause(3)
+
 
 if __name__ == '__main__':
     d = StatusWindow()
